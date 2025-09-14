@@ -1,0 +1,8 @@
+# Desde la carpeta raíz de tu repo
+touch src/main/java/co/edu/uptc/controlador/.gitkeep
+touch src/main/java/co/edu/uptc/dao/.gitkeep
+touch src/main/java/co/edu/uptc/modelo/.gitkeep
+touch src/main/java/co/edu/uptc/servicio/.gitkeep
+touch src/main/java/co/edu/uptc/vista/.gitkeep
+touch src/main/resources/.gitkeep
+touch src/test/.gitkeep
