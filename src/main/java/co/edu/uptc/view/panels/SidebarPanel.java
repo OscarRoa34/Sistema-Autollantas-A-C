@@ -10,14 +10,14 @@ public class SidebarPanel extends JPanel {
     public SidebarPanel(ViewController controller) {
         setLayout(new BorderLayout());
         setBackground(GlobalView.ASIDE_BACKGROUND);
-        setPreferredSize(new Dimension(250, 0)); // 🔹 Más ancho
+        setPreferredSize(new Dimension(250, 0)); 
 
         // ====== LOGO SUPERIOR ======
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
-        logoPanel.setPreferredSize(new Dimension(250, 230)); // 🔹 Espacio reservado para el logo
+        logoPanel.setPreferredSize(new Dimension(250, 230)); 
 
-        JLabel logoLabel = new JLabel(new ImageIcon("src\\main\\resources\\Images\\Logo1.png"));
+        JLabel logoLabel = new JLabel(new ImageIcon("src\\main\\resources\\Images\\logo.png"));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         logoPanel.add(logoLabel);
 
@@ -49,7 +49,7 @@ public class SidebarPanel extends JPanel {
         buttonsPanel.add(btnVentas);
 
         // ====== ENSAMBLE ======
-        add(logoPanel, BorderLayout.NORTH);   // 🔹 Logo arriba
-        add(buttonsPanel, BorderLayout.CENTER); // 🔹 Botones más abajo
+        add(logoPanel, BorderLayout.NORTH);   
+        add(buttonsPanel, BorderLayout.CENTER);
     }
 }

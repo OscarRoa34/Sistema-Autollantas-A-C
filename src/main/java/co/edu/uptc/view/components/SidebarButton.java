@@ -20,12 +20,10 @@ public class SidebarButton extends JButton {
         setIconTextGap(10);
         setMargin(new Insets(10, 15, 10, 10));
         
-        // 🔹 Ajuste para centrar el texto si es largo
         setHorizontalTextPosition(SwingConstants.RIGHT);
         setVerticalTextPosition(SwingConstants.CENTER);
         setText("<html><div style='text-align: center;'>" + text + "</div></html>");
         
-        // 🔹 Efecto hover
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {

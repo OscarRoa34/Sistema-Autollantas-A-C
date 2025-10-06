@@ -14,13 +14,12 @@ public class MainFrame extends JFrame {
         setTitle("Autollantas A&C");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        // 🔹 Quita la barra superior nativa (sin título ni botones del sistema)
         setUndecorated(true);
 
         setExtendedState(MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 
-        sidebar = new SidebarPanel(null); // se asigna luego
+        sidebar = new SidebarPanel(null); 
 
         mainContainer = new JPanel(new BorderLayout());
         controller = new ViewController(mainContainer);
@@ -29,12 +28,10 @@ public class MainFrame extends JFrame {
 
         HeaderPanel header = new HeaderPanel();
 
-        // Panel derecho con header y contenido
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(header, BorderLayout.NORTH);
         rightPanel.add(mainContainer, BorderLayout.CENTER);
 
-        // Estructura general
         JPanel mainLayout = new JPanel(new BorderLayout());
         mainLayout.add(sidebar, BorderLayout.WEST);
         mainLayout.add(rightPanel, BorderLayout.CENTER);
