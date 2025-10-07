@@ -3,13 +3,16 @@ package co.edu.uptc.view.panels;
 import javax.swing.*;
 import java.awt.*;
 import co.edu.uptc.view.GlobalView;
+import co.edu.uptc.view.utils.PropertiesService;
 import co.edu.uptc.view.utils.RoundedButton;
 
 public class HeaderPanel extends JPanel {
 
     private RoundedButton btnCerrar;
+    private PropertiesService p;
 
     public HeaderPanel() {
+        p = new PropertiesService();
         setLayout(new BorderLayout());
         setBackground(GlobalView.HEADER_BACKGROUND);
         setPreferredSize(new Dimension(0, 100));
@@ -19,7 +22,7 @@ public class HeaderPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(23, 23, 23, 23));
 
         ImageIcon iconSalir = new ImageIcon(
-                new ImageIcon("src\\main\\resources\\Images\\logout.png")
+                new ImageIcon(p.getProperties("logout"))
                         .getImage()
                         .getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 

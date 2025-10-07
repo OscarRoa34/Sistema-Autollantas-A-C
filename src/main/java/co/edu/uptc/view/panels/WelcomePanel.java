@@ -7,13 +7,16 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 
 import co.edu.uptc.view.GlobalView;
+import co.edu.uptc.view.utils.PropertiesService;
 
 public class WelcomePanel extends JPanel {
 
     private Image backgroundImage;
+    private PropertiesService p;
 
     public WelcomePanel() {
-        backgroundImage = new ImageIcon("src\\main\\resources\\Images\\welcomePanelBG.png").getImage();
+        p = new PropertiesService();
+        backgroundImage = new ImageIcon(p.getProperties("welcomeimage")).getImage();
         setLayout(new BorderLayout());
     }
 

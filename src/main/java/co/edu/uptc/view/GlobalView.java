@@ -11,6 +11,7 @@ public class GlobalView {
     
     public static Color ASIDE_BUTTONS_BACKGROUND = new Color(223, 166, 31);
     public static Color ASIDE_BUTTONS_BACKGROUND_HOVER = new Color(210, 153, 18);
+    public static Color ASIDE_BUTTONS_BACKGROUND_ACTIVE = new Color(44, 44, 44);
 
 
     public static Color CLOSE_BUTTON_BACKGROUND = new Color(237, 28, 36);
