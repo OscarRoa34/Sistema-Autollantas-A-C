@@ -22,20 +22,36 @@ public class SidebarPanel extends JPanel {
         setBackground(GlobalView.ASIDE_BACKGROUND);
         setPreferredSize(new Dimension(250, 0));
 
-        JPanel logoPanel = new JPanel();
+        // Panel del logo (más pequeño)
+        JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
-        logoPanel.setPreferredSize(new Dimension(250, 230));
-        JLabel logoLabel = new JLabel(new ImageIcon(p.getProperties("logo")));
-        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        logoPanel.add(logoLabel);
+        logoPanel.setPreferredSize(new Dimension(250, 180)); // antes 230
 
-        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, 30));
+        JLabel logoLabel = new JLabel();
+        ImageIcon logoIcon = new ImageIcon(p.getProperties("logo"));
+
+        // Escalar imagen para hacerla más pequeña
+        Image scaledLogo = logoIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        logoLabel.setIcon(new ImageIcon(scaledLogo));
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        logoLabel.setVerticalAlignment(SwingConstants.TOP);
+        logoPanel.add(logoLabel, BorderLayout.CENTER);
+
+        // Panel de botones con más espacio disponible
+        JPanel buttonsPanel = new JPanel(new GridLayout(5, 1, 0, 25));
         buttonsPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0)); // margen superior e inferior
 
         SidebarButton btnProductos = createSidebarButton(
-                "Gestión de Productos y Servicios",
+                "Gestión de Productos",
                 new ImageIcon(p.getProperties("products")),
                 () -> controller.showPanel(new ProductsPanel())
+        );
+
+        SidebarButton btnServicios = createSidebarButton(
+                "Gestión de Servicios",
+                new ImageIcon(p.getProperties("services")),
+                () -> controller.showPanel(new ServicesPanel())
         );
 
         SidebarButton btnCompras = createSidebarButton(
@@ -50,16 +66,26 @@ public class SidebarPanel extends JPanel {
                 () -> controller.showPanel(new SalesPanel())
         );
 
+        SidebarButton btnReportes = createSidebarButton(
+                "Reportes y Alertas",
+                new ImageIcon(p.getProperties("reports")),
+                () -> controller.showPanel(new ReportsPanel())
+        );
+
         buttonsPanel.add(btnProductos);
+        buttonsPanel.add(btnServicios);
         buttonsPanel.add(btnCompras);
         buttonsPanel.add(btnVentas);
+        buttonsPanel.add(btnReportes);
 
         add(logoPanel, BorderLayout.NORTH);
         add(buttonsPanel, BorderLayout.CENTER);
 
         buttons.add(btnProductos);
+        buttons.add(btnServicios);
         buttons.add(btnCompras);
         buttons.add(btnVentas);
+        buttons.add(btnReportes);
     }
 
     private SidebarButton createSidebarButton(String text, ImageIcon icon, Runnable onClick) {

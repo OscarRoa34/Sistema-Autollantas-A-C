@@ -28,7 +28,7 @@ public class WelcomePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        BufferedImage blurred = createBlurredImage(getWidth(), getHeight(), 15);
+        BufferedImage blurred = createBlurredImage(getWidth(), getHeight(), 12);
         g2.drawImage(blurred, 0, 0, getWidth(), getHeight(), this);
 
         int ovalWidth = (int) (getWidth()* 1.);  

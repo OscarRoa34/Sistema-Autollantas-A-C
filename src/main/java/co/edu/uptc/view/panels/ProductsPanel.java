@@ -6,6 +6,6 @@ import java.awt.*;
 public class ProductsPanel extends JPanel {
     public ProductsPanel() {
         setLayout(new BorderLayout());
-        add(new JLabel("Gestión de Productos y Servicios", SwingConstants.CENTER), BorderLayout.CENTER);
+        add(new JLabel("Gestión de Productos", SwingConstants.CENTER), BorderLayout.CENTER);
     }
 }
