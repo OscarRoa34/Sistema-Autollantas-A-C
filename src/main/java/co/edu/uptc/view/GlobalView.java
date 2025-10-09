@@ -17,5 +17,11 @@ public class GlobalView {
     public static Color CLOSE_BUTTON_BACKGROUND = new Color(237, 28, 36);
     public static Color CLOSE_BUTTON_BACKGROUND_HOVER = new Color(200, 28, 36);
 
+    
+    public static Color CONFIRM_BUTTON_BACKGROUND = new Color(104, 196, 102);
+    public static Color CANCEL_BUTTON_BACKGROUND = new Color(212, 66, 70);
+
+
+    public static Color DIALOG_BACKGROUND = new Color(222, 224, 223);
 
 }

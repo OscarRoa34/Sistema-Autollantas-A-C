@@ -35,16 +35,17 @@ public class HeaderPanel extends JPanel {
                 null
         );
 
-        btnCerrar.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "¿Seguro que quieres salir?",
-                    "Confirmar salida",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                System.exit(0);
-            }
-        });
+       btnCerrar.addActionListener(e -> {
+    boolean confirm = co.edu.uptc.view.dialogs.ConfirmDialog.showConfirmDialog(
+            null,
+            "¿Está seguro de querer cerrar la aplicación?",
+            "Confirmar salida"
+    );
+
+    if (confirm) {
+        System.exit(0);
+    }
+});
 
         content.add(btnCerrar, BorderLayout.EAST);
         add(content, BorderLayout.CENTER);

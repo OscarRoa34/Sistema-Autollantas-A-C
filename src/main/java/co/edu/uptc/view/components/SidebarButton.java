@@ -22,8 +22,6 @@ public class SidebarButton extends JButton {
         setBorderPainted(false);
         setContentAreaFilled(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        // Alineación del contenido
         setHorizontalAlignment(SwingConstants.CENTER);
         setHorizontalTextPosition(SwingConstants.RIGHT);
         setVerticalTextPosition(SwingConstants.CENTER);
