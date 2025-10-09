@@ -22,6 +22,8 @@ public class GlobalView {
     public static Color CANCEL_BUTTON_BACKGROUND = new Color(212, 66, 70);
 
 
-    public static Color DIALOG_BACKGROUND = new Color(222, 224, 223);
+    public static Color DIALOG_BACKGROUND = new Color(216, 216, 216);
+    public static Color WARNING_POPUP_BACKGROUND = new Color(235, 135, 68);
+
 
 }

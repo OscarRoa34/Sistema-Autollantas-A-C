@@ -27,11 +27,11 @@ public class ConfirmDialog extends JDialog {
                 int width = getWidth();
                 int height = getHeight();
 
-                g2.setColor(GlobalView.DIALOG_BACKGROUND);
+                g2.setColor(GlobalView.ASIDE_BACKGROUND);
                 g2.fillRoundRect(0, 0, width, height, arc, arc);
 
                 g2.setStroke(new BasicStroke(6f));
-                g2.setColor(GlobalView.ASIDE_BACKGROUND);
+                g2.setColor(GlobalView.ASIDE_BUTTONS_BACKGROUND_HOVER);
                 g2.drawRoundRect(1, 1, width - 2, height - 2, arc, arc);
 
                 g2.dispose();
@@ -47,7 +47,7 @@ public class ConfirmDialog extends JDialog {
 
         JLabel lblMessage = new JLabel("<html><div style='text-align: center;'>" + message + "</div></html>");
         lblMessage.setFont(new Font("Segoe UI", Font.PLAIN, 35));
-        lblMessage.setForeground(Color.BLACK);
+        lblMessage.setForeground(Color.WHITE);
         lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 10));
