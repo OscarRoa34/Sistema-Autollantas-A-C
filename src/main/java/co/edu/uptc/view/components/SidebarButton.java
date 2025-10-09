@@ -13,8 +13,8 @@ public class SidebarButton extends JButton {
     private final Color activeColor = GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE;
 
     public SidebarButton(String text, ImageIcon icon) {
-        super(text, icon);
-        setHorizontalAlignment(SwingConstants.LEFT);
+        super("<html><div style='text-align: center; display: flex; align-items: center; justify-content: center;'>"
+                + "<span style='display: inline-block; vertical-align: middle;'>" + text + "</span></div></html>", icon);
         setFont(new Font("Segoe UI", Font.BOLD, 15));
         setForeground(Color.WHITE);
         setBackground(normalColor);
@@ -22,51 +22,40 @@ public class SidebarButton extends JButton {
         setBorderPainted(false);
         setContentAreaFilled(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setIconTextGap(10);
-        setMargin(new Insets(10, 15, 10, 10));
-        
+
+        // Alineación del contenido
+        setHorizontalAlignment(SwingConstants.CENTER);
         setHorizontalTextPosition(SwingConstants.RIGHT);
         setVerticalTextPosition(SwingConstants.CENTER);
-        setText("<html><div style='text-align: center;'>" + text + "</div></html>");
-        
+        setIconTextGap(12);
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (!isActive) {
-                    setBackground(hoverColor);
-                }
+                if (!isActive) setBackground(hoverColor);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (!isActive) {
-                    setBackground(normalColor);
-                }
+                if (!isActive) setBackground(normalColor);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if (!isActive) {
-                    setBackground(activeColor);
-                }
+                if (!isActive) setBackground(activeColor);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (contains(e.getPoint()) && !isActive) {
+                if (contains(e.getPoint()) && !isActive)
                     setBackground(hoverColor);
-                }
             }
         });
     }
 
     public void setActive(boolean active) {
         this.isActive = active;
-        if (active) {
-            setBackground(activeColor);
-        } else {
-            setBackground(normalColor);
-        }
+        setBackground(active ? activeColor : normalColor);
     }
 
     public boolean isActive() {

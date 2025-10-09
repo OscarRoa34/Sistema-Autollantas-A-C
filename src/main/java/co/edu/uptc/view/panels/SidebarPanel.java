@@ -22,25 +22,22 @@ public class SidebarPanel extends JPanel {
         setBackground(GlobalView.ASIDE_BACKGROUND);
         setPreferredSize(new Dimension(250, 0));
 
-        // Panel del logo (más pequeño)
         JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
-        logoPanel.setPreferredSize(new Dimension(250, 180)); // antes 230
+        logoPanel.setPreferredSize(new Dimension(250, 180)); 
 
         JLabel logoLabel = new JLabel();
         ImageIcon logoIcon = new ImageIcon(p.getProperties("logo"));
 
-        // Escalar imagen para hacerla más pequeña
         Image scaledLogo = logoIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         logoLabel.setIcon(new ImageIcon(scaledLogo));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         logoLabel.setVerticalAlignment(SwingConstants.TOP);
         logoPanel.add(logoLabel, BorderLayout.CENTER);
 
-        // Panel de botones con más espacio disponible
         JPanel buttonsPanel = new JPanel(new GridLayout(5, 1, 0, 25));
         buttonsPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0)); // margen superior e inferior
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         SidebarButton btnProductos = createSidebarButton(
                 "Gestión de Productos",
@@ -67,7 +64,7 @@ public class SidebarPanel extends JPanel {
         );
 
         SidebarButton btnReportes = createSidebarButton(
-                "Reportes y Alertas",
+                "Gestion de Reportes y Alertas",
                 new ImageIcon(p.getProperties("reports")),
                 () -> controller.showPanel(new ReportsPanel())
         );
