@@ -13,6 +13,7 @@ public class GlobalView {
     public static Color ASIDE_BUTTONS_BACKGROUND_HOVER = new Color(210, 153, 18);
     public static Color ASIDE_BUTTONS_BACKGROUND_ACTIVE = new Color(44, 44, 44);
 
+    public static Color PRODUCTS_OPTIONS_BACKGROUND = new Color(181, 177, 168);
 
     public static Color CLOSE_BUTTON_BACKGROUND = new Color(237, 28, 36);
     public static Color CLOSE_BUTTON_BACKGROUND_HOVER = new Color(200, 28, 36);
@@ -25,5 +26,6 @@ public class GlobalView {
     public static Color DIALOG_BACKGROUND = new Color(216, 216, 216);
     public static Color WARNING_POPUP_BACKGROUND = new Color(235, 135, 68);
 
+    public static Color PRODUCTS_OPTIONS_BUTTON_COLOR = new Color(36, 35, 35);
 
 }

@@ -44,7 +44,7 @@ public class SuccessPopUp extends JWindow {
         JLabel lblText = new JLabel(
             "<html><div style='color:white; font-family:Segoe UI; line-height:1.25; width:240px;'>" +
             "<b style='font-size:16px;'>" + title + "</b><br>" +
-            "<span style='font-size:13px;'>" + ajustarTexto(message, 10) + "</span></div></html>"
+            "<span style='font-size:13px;'>" + ajustarTexto(message, 15) + "</span></div></html>"
         );
         lblText.setForeground(Color.WHITE);
         lblText.setBounds(90, 25, 240, 70);
@@ -70,7 +70,7 @@ public class SuccessPopUp extends JWindow {
 
         fadeIn();
 
-        Timer timer = new Timer(3000, e -> fadeOutAndClose());
+        Timer timer = new Timer(2500, e -> fadeOutAndClose());
         timer.setRepeats(false);
         timer.start();
     }
@@ -94,7 +94,7 @@ public class SuccessPopUp extends JWindow {
     private void fadeIn() {
         setOpacity(0f);
         setVisible(true);
-        Timer fadeTimer = new Timer(30, new ActionListener() {
+        Timer fadeTimer = new Timer(20, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 opacity += 0.05f;
@@ -109,7 +109,7 @@ public class SuccessPopUp extends JWindow {
     }
 
     private void fadeOutAndClose() {
-        Timer fadeTimer = new Timer(30, new ActionListener() {
+        Timer fadeTimer = new Timer(20, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 opacity -= 0.05f;

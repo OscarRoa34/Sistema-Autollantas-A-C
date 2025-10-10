@@ -42,7 +42,7 @@ public class SidebarPanel extends JPanel {
         SidebarButton btnProductos = createSidebarButton(
                 "Gestión de Productos",
                 new ImageIcon(p.getProperties("products")),
-                () -> controller.showPanel(new ProductsPanel())
+                () -> controller.showPanel(new ProductsPanel(controller))
         );
 
         SidebarButton btnServicios = createSidebarButton(

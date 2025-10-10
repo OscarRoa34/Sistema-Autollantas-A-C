@@ -8,40 +8,45 @@ import java.awt.event.*;
 import java.util.*;
 import org.json.*;
 
+import co.edu.uptc.view.GlobalView;
+import co.edu.uptc.view.dialogs.ConfirmDialog;
+import co.edu.uptc.view.dialogs.SuccessPopUp;
+import co.edu.uptc.view.utils.PropertiesService;
+
 public class ServicesPanel extends JPanel {
 
+    private PropertiesService p;
     private JTable table;
     private DefaultTableModel model;
     private java.util.List<JSONObject> allData;
     private java.util.List<JSONObject> filteredData;
     private int currentPage = 1;
-    private int rowsPerPage = 10;
+    private int rowsPerPage = 9;
     private JLabel pageLabel;
     private JButton prevBtn, nextBtn;
     private JTextField searchField;
 
     public ServicesPanel() {
+        p = new PropertiesService();
         setLayout(new BorderLayout());
         setBackground(new Color(240, 240, 240));
 
         JLabel title = new JLabel("Gestión de Servicios", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 20));
-        title.setBorder(new EmptyBorder(10, 0, 10, 0));
+        title.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 28));
+        title.setBorder(new EmptyBorder(15, 0, 15, 0));
         add(title, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(new Color(240, 240, 240));
-        centerPanel.setBorder(new EmptyBorder(10, 30, 10, 30));
+        centerPanel.setBorder(new EmptyBorder(10, 30, 41, 30));
         add(centerPanel, BorderLayout.CENTER);
 
-        // ----- Buscador -----
         JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
-        searchPanel.setBackground(new Color(240, 240, 240));
-
         searchField = new JTextField(" Buscar Servicio por nombre");
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         searchField.setForeground(Color.GRAY);
         searchField.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+        searchField.setPreferredSize(new Dimension(0, 40)); 
 
         searchField.addFocusListener(new FocusAdapter() {
             @Override
@@ -62,44 +67,52 @@ public class ServicesPanel extends JPanel {
             }
         });
 
-        JButton searchButton = new JButton("\uD83D\uDD0D");
+        ImageIcon searchIcon = createIcon(p.getProperties("search"), 25, 25);
+        JButton searchButton = new JButton(searchIcon);
         searchButton.setBackground(Color.WHITE);
         searchButton.setFocusable(false);
         searchButton.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+        searchButton.setPreferredSize(new Dimension(50, 40));
         searchButton.addActionListener(e -> filterData(searchField.getText().trim().toLowerCase()));
 
         searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchButton, BorderLayout.EAST);
         centerPanel.add(searchPanel, BorderLayout.NORTH);
 
-        // ----- Tabla -----
-        String[] columns = {"Código", "Nombre Servicio", "Productos Asociados", "Precio servicio", "Total"};
+        String[] columns = { "Código", "Nombre Servicio", "Productos Asociados", "Precio servicio", "Total",
+                "Acciones" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int col) {
-                return false;
+                return col == 5;
             }
         };
-
         table = new JTable(model);
-        table.setRowHeight(40);
+        table.setRowHeight(43);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
         table.getTableHeader().setBackground(new Color(245, 245, 245));
 
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount() - 1; i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        table.getColumnModel().getColumn(5).setCellRenderer(new ActionRenderer());
+        table.getColumnModel().getColumn(5).setCellEditor(new ActionEditor());
+
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(0, 350)); // 🔽 controla la altura visible
+        scrollPane.setPreferredSize(new Dimension(0, 350));
         scrollPane.setBorder(new LineBorder(new Color(200, 200, 200)));
         scrollPane.getViewport().setBackground(Color.WHITE);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // ----- Panel inferior -----
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(new Color(240, 240, 240));
-        bottomPanel.setBorder(new EmptyBorder(15, 30, 15, 30)); // 🔼 más alto
+        bottomPanel.setBorder(new EmptyBorder(15, 30, 15, 30));
         centerPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        // Paginación
         JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         paginationPanel.setBackground(new Color(240, 240, 240));
 
@@ -107,13 +120,12 @@ public class ServicesPanel extends JPanel {
         nextBtn = new JButton(">>");
         pageLabel = new JLabel();
 
-        JButton[] navButtons = {prevBtn, nextBtn};
-        for (JButton b : navButtons) {
+        for (JButton b : new JButton[] { prevBtn, nextBtn }) {
             b.setFont(new Font("Segoe UI", Font.PLAIN, 15));
             b.setFocusable(false);
             b.setBackground(Color.WHITE);
             b.setBorder(new LineBorder(new Color(180, 180, 180)));
-            b.setPreferredSize(new Dimension(50, 35)); // 🔼 botones más grandes
+            b.setPreferredSize(new Dimension(50, 35));
         }
 
         prevBtn.addActionListener(e -> {
@@ -137,56 +149,16 @@ public class ServicesPanel extends JPanel {
         paginationPanel.add(nextBtn);
         bottomPanel.add(paginationPanel, BorderLayout.WEST);
 
-        // Botón “Nuevo Servicio”
         JButton newServiceBtn = new JButton("+  Nuevo Servicio");
         newServiceBtn.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         newServiceBtn.setBackground(new Color(30, 30, 30));
         newServiceBtn.setForeground(Color.WHITE);
         newServiceBtn.setFocusPainted(false);
-        newServiceBtn.setBorder(new EmptyBorder(10, 20, 10, 20)); // 🔼 más alto y ancho
+        newServiceBtn.setBorder(new EmptyBorder(10, 20, 10, 20));
         newServiceBtn.setPreferredSize(new Dimension(220, 45));
         bottomPanel.add(newServiceBtn, BorderLayout.EAST);
 
-        // ----- Cargar JSON -----
         loadJSONData();
-    }
-
-
-    public void loadJSONData() {
-        String jsonText = """
-                      [
-                        {"codigo":"SVC-001","nombre":"Cambio de aceite (Aceite 10W40)","productos":"Aceite 10W40 Mobil 3.78 L, Filtro aceite DGP","precio":"$120,000","total":"$160,000"},
-                        {"codigo":"SVC-002","nombre":"Balanceo","productos":"","precio":"$80,000","total":"$80,000"},
-                        {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
-                        {"codigo":"SVC-004","nombre":"Alineación","productos":"","precio":"$100,000","total":"$100,000"},
-                        {"codigo":"SVC-005","nombre":"Rectificación de discos","productos":"","precio":"$150,000","total":"$150,000"},
-                        {"codigo":"SVC-006","nombre":"Lavado general","productos":"","precio":"$60,000","total":"$60,000"},
-                        {"codigo":"SVC-007","nombre":"Cambio de frenos","productos":"","precio":"$90,000","total":"$90,000"},
-                {"codigo":"SVC-008","nombre":"Cambio de llantas","productos":"Juego de llantas Michelin 185/65R14","precio":"$400,000","total":"$400,000"},
-                {"codigo":"SVC-009","nombre":"Rotación de llantas","productos":"","precio":"$70,000","total":"$70,000"},
-                {"codigo":"SVC-010","nombre":"Cambio de bujías","productos":"Juego de bujías NGK","precio":"$90,000","total":"$90,000"},
-                {"codigo":"SVC-011","nombre":"Cambio de batería","productos":"Batería MAC Silver 12V","precio":"$250,000","total":"$250,000"},
-                {"codigo":"SVC-012","nombre":"Cambio de pastillas de freno","productos":"Juego de pastillas TRW","precio":"$130,000","total":"$130,000"},
-                {"codigo":"SVC-013","nombre":"Cambio de líquido de frenos","productos":"Líquido DOT4","precio":"$60,000","total":"$60,000"},
-                {"codigo":"SVC-014","nombre":"Revisión de suspensión","productos":"","precio":"$100,000","total":"$100,000"},
-                {"codigo":"SVC-015","nombre":"Revisión de luces","productos":"Bombillos H4 Philips","precio":"$50,000","total":"$50,000"},
-                {"codigo":"SVC-016","nombre":"Cambio de filtro de aire","productos":"Filtro aire Bosch","precio":"$70,000","total":"$70,000"},
-                {"codigo":"SVC-017","nombre":"Cambio de filtro de combustible","productos":"Filtro gasolina Fram","precio":"$80,000","total":"$80,000"},
-                {"codigo":"SVC-018","nombre":"Sincronización de motor","productos":"Scanner y calibración electrónica","precio":"$220,000","total":"$220,000"},
-                {"codigo":"SVC-019","nombre":"Revisión general de frenos","productos":"","precio":"$120,000","total":"$120,000"},
-                {"codigo":"SVC-020","nombre":"Cambio de líquido refrigerante","productos":"Refrigerante Prestone 1 Galón","precio":"$90,000","total":"$90,000"},
-                {"codigo":"SVC-021","nombre":"Cambio de correa de distribución","productos":"Kit correa Gates","precio":"$350,000","total":"$350,000"},
-                {"codigo":"SVC-022","nombre":"Revisión técnico-mecánica preventiva","productos":"","precio":"$180,000","total":"$180,000"}
-                        ]
-                      """;
-
-        allData = new ArrayList<>();
-        JSONArray arr = new JSONArray(jsonText);
-        for (int i = 0; i < arr.length(); i++) {
-            allData.add(arr.getJSONObject(i));
-        }
-        filteredData = new ArrayList<>(allData);
-        refreshTable();
     }
 
     private void filterData(String query) {
@@ -204,6 +176,35 @@ public class ServicesPanel extends JPanel {
         refreshTable();
     }
 
+    public void loadJSONData() {
+        String jsonText = """
+                      [
+                {"codigo":"SVC-001","nombre":"Cambio de aceite (Aceite 10W40)","productos":"Aceite 10W40 Mobil 3.78 L, Filtro aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-002","nombre":"Balanceo","productos":"","precio":"$80,000","total":"$80,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"},
+                {"codigo":"SVC-003","nombre":"Cambio de aceite (Aceite 5W30)","productos":"Aceite 5W30, Filtro Aceite DGP","precio":"$120,000","total":"$160,000"}
+                        
+                ]
+                      """;
+
+        allData = new ArrayList<>();
+        JSONArray arr = new JSONArray(jsonText);
+        for (int i = 0; i < arr.length(); i++) {
+            allData.add(arr.getJSONObject(i));
+        }
+        filteredData = new ArrayList<>(allData);
+        refreshTable();
+    }
+
     private void refreshTable() {
         model.setRowCount(0);
         int start = (currentPage - 1) * rowsPerPage;
@@ -211,12 +212,13 @@ public class ServicesPanel extends JPanel {
 
         for (int i = start; i < end; i++) {
             JSONObject obj = filteredData.get(i);
-            model.addRow(new Object[]{
+            model.addRow(new Object[] {
                     obj.getString("codigo"),
                     obj.getString("nombre"),
                     obj.getString("productos"),
                     obj.getString("precio"),
-                    obj.getString("total")
+                    obj.getString("total"),
+                    ""
             });
         }
 
@@ -224,5 +226,118 @@ public class ServicesPanel extends JPanel {
         pageLabel.setText(" " + currentPage + " / " + maxPage + " ");
         prevBtn.setEnabled(currentPage > 1);
         nextBtn.setEnabled(currentPage < maxPage);
+    }
+
+    private ImageIcon createIcon(String path, int width, int height) {
+        ImageIcon icon = new ImageIcon(path);
+        Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
+
+    class ActionRenderer extends DefaultTableCellRenderer {
+        private final JPanel panel = new JPanel();
+        private final JButton editBtn;
+        private final JButton deleteBtn;
+
+        public ActionRenderer() {
+            panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+            panel.setOpaque(true);
+
+            editBtn = new JButton(createIcon(p.getProperties("edit"), 18, 18));
+            deleteBtn = new JButton(createIcon(p.getProperties("delete"), 18, 18));
+
+            for (JButton b : new JButton[] { editBtn, deleteBtn }) {
+                b.setFocusPainted(false);
+                b.setBorderPainted(false);
+                b.setContentAreaFilled(true);
+                b.setBackground(GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE);
+                b.setOpaque(true);
+                b.setPreferredSize(new Dimension(35, 35));
+                b.setAlignmentY(Component.CENTER_ALIGNMENT);
+            }
+
+            panel.add(editBtn);
+            panel.add(deleteBtn);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            panel.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+            return panel;
+        }
+    }
+
+    class ActionEditor extends AbstractCellEditor implements TableCellEditor {
+        private final JPanel panel = new JPanel();
+        private final JButton editBtn;
+        private final JButton deleteBtn;
+
+        public ActionEditor() {
+            panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+            panel.setOpaque(true);
+
+            editBtn = new JButton(createIcon(p.getProperties("edit"), 18, 18));
+            deleteBtn = new JButton(createIcon(p.getProperties("delete"), 18, 18));
+
+            for (JButton b : new JButton[] { editBtn, deleteBtn }) {
+                b.setFocusPainted(false);
+                b.setBorderPainted(false);
+                b.setContentAreaFilled(true);
+                b.setBackground(GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE);
+                b.setOpaque(true);
+                b.setPreferredSize(new Dimension(35, 35));
+                b.setAlignmentY(Component.CENTER_ALIGNMENT);
+            }
+
+            panel.add(editBtn);
+            panel.add(deleteBtn);
+
+            editBtn.addActionListener(e -> {
+                int row = table.getEditingRow();
+                JSONObject obj = filteredData.get((currentPage - 1) * rowsPerPage + row);
+                JOptionPane.showMessageDialog(ServicesPanel.this, "Editar: " + obj.getString("nombre"));
+                fireEditingStopped();
+            });
+
+            deleteBtn.addActionListener(e -> {
+                int row = table.getEditingRow();
+                JSONObject obj = filteredData.get((currentPage - 1) * rowsPerPage + row);
+
+                Window window = SwingUtilities.getWindowAncestor(ServicesPanel.this);
+                Frame parentFrame = window instanceof Frame ? (Frame) window : null;
+
+                boolean confirm = ConfirmDialog.showConfirmDialog(
+                        parentFrame,
+                        "¿Desea eliminar el servicio \"" + obj.getString("nombre") + "\"?",
+                        "Confirmar eliminación");
+
+                if (confirm) {
+                    allData.remove(obj);
+                    filteredData.remove(obj);
+                    refreshTable();
+
+                    SuccessPopUp success = new SuccessPopUp(parentFrame, "Exito:",
+                            "El servicio se eliminó correctamente");
+                    success.setVisible(true);
+                }
+
+                fireEditingStopped();
+            });
+
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            panel.setBackground(table.getSelectionBackground());
+            return panel;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return null;
+        }
     }
 }

@@ -31,7 +31,7 @@ public class ConfirmDialog extends JDialog {
                 g2.fillRoundRect(0, 0, width, height, arc, arc);
 
                 g2.setStroke(new BasicStroke(6f));
-                g2.setColor(GlobalView.ASIDE_BUTTONS_BACKGROUND_HOVER);
+                g2.setColor(Color.WHITE);
                 g2.drawRoundRect(1, 1, width - 2, height - 2, arc, arc);
 
                 g2.dispose();
