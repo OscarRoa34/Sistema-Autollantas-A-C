@@ -2,6 +2,9 @@ package co.edu.uptc.view.panels;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import co.edu.uptc.view.GlobalView;
 import co.edu.uptc.view.utils.PropertiesService;
 import co.edu.uptc.view.utils.RoundedButton;
@@ -9,7 +12,11 @@ import co.edu.uptc.view.utils.RoundedButton;
 public class HeaderPanel extends JPanel {
 
     private RoundedButton btnCerrar;
+    private JLabel lblFechaHora;
     private PropertiesService p;
+    @SuppressWarnings("deprecation")
+    private final SimpleDateFormat formato =
+            new SimpleDateFormat("'Hoy es' EEEE d 'de' MMMM 'de' yyyy, h:mma", new Locale("es", "ES"));
 
     public HeaderPanel() {
         p = new PropertiesService();
@@ -21,6 +28,15 @@ public class HeaderPanel extends JPanel {
         content.setOpaque(false);
         content.setBorder(BorderFactory.createEmptyBorder(23, 23, 23, 23));
 
+        lblFechaHora = new JLabel(formatFecha());
+        lblFechaHora.setForeground(Color.WHITE);
+        lblFechaHora.setFont(new Font("SansSerif", Font.BOLD, 20));
+        content.add(lblFechaHora, BorderLayout.WEST);
+
+        Timer timer = new Timer(60000, e -> lblFechaHora.setText(formatFecha()));
+        timer.setInitialDelay(0);
+        timer.start();
+
         ImageIcon iconSalir = new ImageIcon(
                 new ImageIcon(p.getProperties("logout"))
                         .getImage()
@@ -31,23 +47,28 @@ public class HeaderPanel extends JPanel {
                 iconSalir,
                 15,
                 GlobalView.CLOSE_BUTTON_BACKGROUND,
-                GlobalView.CLOSE_BUTTON_BACKGROUND_HOVER, 
+                GlobalView.CLOSE_BUTTON_BACKGROUND_HOVER,
                 null
         );
 
-       btnCerrar.addActionListener(e -> {
-    boolean confirm = co.edu.uptc.view.dialogs.ConfirmDialog.showConfirmDialog(
-            null,
-            "¿Está seguro de querer cerrar la aplicación?",
-            "Confirmar salida"
-    );
+        btnCerrar.addActionListener(e -> {
+            boolean confirm = co.edu.uptc.view.dialogs.ConfirmDialog.showConfirmDialog(
+                    null,
+                    "¿Está seguro de querer cerrar la aplicación?",
+                    "Confirmar salida"
+            );
 
-    if (confirm) {
-        System.exit(0);
-    }
-});
+            if (confirm) {
+                System.exit(0);
+            }
+        });
 
         content.add(btnCerrar, BorderLayout.EAST);
         add(content, BorderLayout.CENTER);
+    }
+
+    private String formatFecha() {
+        String texto = formato.format(new Date()).toLowerCase();
+        return "H" + texto.substring(1);
     }
 }

@@ -29,7 +29,7 @@ public class ServicesPanel extends JPanel {
     public ServicesPanel() {
         p = new PropertiesService();
         setLayout(new BorderLayout());
-        setBackground(new Color(240, 240, 240));
+        setBackground(GlobalView.GENERAL_BACKGROUND);
 
         JLabel title = new JLabel("Gestión de Servicios", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 28));

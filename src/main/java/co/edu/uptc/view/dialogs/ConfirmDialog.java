@@ -9,8 +9,10 @@ public class ConfirmDialog extends JDialog {
 
     private boolean confirmed = false;
 
-    public ConfirmDialog(Frame parent, String message, String title) {
-        super(parent, title, true);
+   public ConfirmDialog(Window parent, String message, String title) {
+    super(parent, title, ModalityType.APPLICATION_MODAL);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    setResizable(false);
         setUndecorated(true);
         setLayout(new BorderLayout());
         setSize(440, 240);
@@ -39,7 +41,7 @@ public class ConfirmDialog extends JDialog {
 
             @Override
             public boolean isOpaque() {
-                return false; 
+                return false;
             }
         };
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
@@ -54,7 +56,7 @@ public class ConfirmDialog extends JDialog {
         buttonPanel.setOpaque(false);
 
         JButton btnYes = createStyledButton("Aceptar", GlobalView.CONFIRM_BUTTON_BACKGROUND);
-        JButton btnNo = createStyledButton("Cancelar", GlobalView.CANCEL_BUTTON_BACKGROUND);  
+        JButton btnNo = createStyledButton("Cancelar", GlobalView.CANCEL_BUTTON_BACKGROUND);
 
         btnYes.addActionListener(e -> {
             confirmed = true;
@@ -100,10 +102,38 @@ public class ConfirmDialog extends JDialog {
 
         return button;
     }
+public boolean isConfirmed() {
+    return confirmed;
+}
 
-    public static boolean showConfirmDialog(Frame parent, String message, String title) {
+   public static boolean showConfirmDialog(Window parent, String message, String title) {
+    ConfirmDialog dialog = new ConfirmDialog(parent, message, title);
+    dialog.setVisible(true);
+    return dialog.isConfirmed();
+}
+
+
+    public static void showErrorDialog(Window parent, String message, String title) {
         ConfirmDialog dialog = new ConfirmDialog(parent, message, title);
+
+        // Cambiar colores y botones para mostrar error
+        for (Component comp : ((JPanel) ((JPanel) dialog.getContentPane().getComponent(0))
+                .getComponent(1)).getComponents()) {
+            if (comp instanceof JButton) {
+                JButton btn = (JButton) comp;
+                btn.setVisible(false);
+            }
+        }
+
+        JButton btnOk = dialog.createStyledButton("Aceptar", GlobalView.CANCEL_BUTTON_BACKGROUND);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(btnOk);
+
+        ((JPanel) dialog.getContentPane().getComponent(0)).add(buttonPanel, BorderLayout.SOUTH);
+        btnOk.addActionListener(e -> dialog.dispose());
+
         dialog.setVisible(true);
-        return dialog.confirmed;
     }
+
 }

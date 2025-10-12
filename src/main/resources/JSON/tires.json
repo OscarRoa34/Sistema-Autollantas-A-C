@@ -1,0 +1,18 @@
+[
+    {"nombre": "Llanta Auto 175/70R13T", "precio": 146800, "marca": "Wanli", "stock": 2, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 205/80R15", "precio": 215000, "marca": "Hankook", "stock": 4, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/60R14", "precio": 185000, "marca": "DoubleStar", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 225/75R16", "precio": 398000, "marca": "Hankook", "stock": 2, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 165/70R13", "precio": 139000, "marca": "Wanli", "stock": 5, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 235/60R16", "precio": 458000, "marca": "DoubleStar", "stock": 1, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 195/65R15", "precio": 199000, "marca": "Wanli", "stock": 2, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Hankook", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Oscar", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "David", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Davidasdasd", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Davidddd", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Leonardo", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+    {"nombre": "Llaccc", "precio": 169000, "marca": "Leonardo", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
+   
+    {"nombre": "Llanta Auto 175/70R14", "precio": 156000, "marca": "DoubleStar", "stock": 6, "imagen": "src/main/resources/Images/welcomePanelBG.png"}
+]

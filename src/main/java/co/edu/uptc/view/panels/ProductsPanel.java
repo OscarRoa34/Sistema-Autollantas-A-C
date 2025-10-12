@@ -26,7 +26,7 @@ public class ProductsPanel extends JPanel {
         String[] iconProps = {"icon.tires", "icon.lubfilters", "icon.battery", "icon.brakepads"};
 
         JPanel[] panels = {
-                new TiresProductPanel(),
+                new TiresProductPanel(controller),
                 new LubFiltersProductPanel(),
                 new BateryProductPanel(),
                 new BrakePadsProductPanel()
@@ -121,13 +121,11 @@ public class ProductsPanel extends JPanel {
                     currentStep++;
                     float ratio = Math.min(1f, (float) currentStep / steps);
 
-                    // Fade del botón
                     int r = (int)(btnFrom.getRed() + ratio * (btnTo.getRed() - btnFrom.getRed()));
                     int g = (int)(btnFrom.getGreen() + ratio * (btnTo.getGreen() - btnFrom.getGreen()));
                     int b = (int)(btnFrom.getBlue() + ratio * (btnTo.getBlue() - btnFrom.getBlue()));
                     setBackground(new Color(r,g,b));
 
-                    // Fade del panel
                     int pr = (int)(panelFrom.getRed() + ratio * (panelTo.getRed() - panelFrom.getRed()));
                     int pg = (int)(panelFrom.getGreen() + ratio * (panelTo.getGreen() - panelFrom.getGreen()));
                     int pb = (int)(panelFrom.getBlue() + ratio * (panelTo.getBlue() - panelFrom.getBlue()));
