@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,7 +29,6 @@ public class TiresProductPanel extends JPanel {
     private JPanel paginationPanel;
     private JPanel filtersPanel;
     private JTextField searchField;
-    private JCheckBox chkWanli, chkDoubleStar, chkHankook;
     private JRadioButton rbMayorPrecio, rbMenorPrecio;
     private PropertiesService p;
     private List<JCheckBox> brandCheckboxes;
@@ -36,6 +37,18 @@ public class TiresProductPanel extends JPanel {
     private int currentPage = 1;
     private final int ITEMS_PER_PAGE = 8;
     private final ViewController controller;
+
+    // --- Iconos personalizados para los JCheckBox ---
+    private static final Icon CHECKBOX_DEFAULT_ICON = createCheckboxIcon(false, false);
+    private static final Icon CHECKBOX_SELECTED_ICON = createCheckboxIcon(true, false);
+    private static final Icon CHECKBOX_HOVER_ICON = createCheckboxIcon(false, true);
+    private static final Icon CHECKBOX_SELECTED_HOVER_ICON = createCheckboxIcon(true, true);
+
+    // --- Iconos personalizados para los JRadioButton ---
+    private static final Icon RADIO_DEFAULT_ICON = createRadioButtonIcon(false, false);
+    private static final Icon RADIO_SELECTED_ICON = createRadioButtonIcon(true, false);
+    private static final Icon RADIO_HOVER_ICON = createRadioButtonIcon(false, true);
+    private static final Icon RADIO_SELECTED_HOVER_ICON = createRadioButtonIcon(true, true);
 
     public TiresProductPanel(ViewController controller) {
         this.controller = controller;
@@ -78,6 +91,17 @@ public class TiresProductPanel extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al leer el archivo JSON.", "Error", JOptionPane.ERROR_MESSAGE);
             return new JSONArray();
+        }
+    }
+
+    private void saveTiresToJson(String path) {
+        try {
+            JSONArray array = new JSONArray(allTires);
+            Files.write(Paths.get(path), array.toString(4).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al guardar el archivo JSON.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -178,11 +202,44 @@ public class TiresProductPanel extends JPanel {
         chk.setForeground(Color.BLACK);
         chk.setBackground(GlobalView.GENERAL_BACKGROUND);
         chk.setFocusPainted(false);
-        chk.setAlignmentX(Component.LEFT_ALIGNMENT);
         chk.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        chk.setAlignmentX(Component.LEFT_ALIGNMENT);
+        chk.setBorder(new EmptyBorder(4, 0, 4, 0)); 
+        chk.setIconTextGap(10); 
+
+        chk.setIcon(CHECKBOX_DEFAULT_ICON);
+        chk.setSelectedIcon(CHECKBOX_SELECTED_ICON);
+        chk.setRolloverIcon(CHECKBOX_HOVER_ICON);
+        chk.setRolloverSelectedIcon(CHECKBOX_SELECTED_HOVER_ICON);
+
         return chk;
     }
 
+    private static Icon createCheckboxIcon(boolean isSelected, boolean isHover) {
+        int width = 18;
+        int height = 18;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        if (isSelected) {
+            g2.setColor(isHover ? GlobalView.ASIDE_BACKGROUND.darker() : GlobalView.ASIDE_BACKGROUND);
+            g2.fill(new RoundRectangle2D.Float(0, 0, width, height, 5, 5));
+            g2.setColor(Color.WHITE);
+            g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.drawLine(5, 9, 8, 12);
+            g2.drawLine(8, 12, 14, 6);
+        } else {
+            g2.setColor(isHover ? Color.BLACK : Color.GRAY);
+            g2.setStroke(new BasicStroke(1.8f));
+            g2.draw(new RoundRectangle2D.Float(1, 1, width - 2, height - 2, 5, 5));
+        }
+
+        g2.dispose();
+        return new ImageIcon(image);
+    }
+    
     private JRadioButton createStyledRadio(String text) {
         JRadioButton rb = new JRadioButton(text);
         rb.setFont(new Font("Segoe UI", Font.PLAIN, 17));
@@ -191,8 +248,40 @@ public class TiresProductPanel extends JPanel {
         rb.setFocusPainted(false);
         rb.setAlignmentX(Component.LEFT_ALIGNMENT);
         rb.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rb.setBorder(new EmptyBorder(4, 0, 4, 0)); 
+        rb.setIconTextGap(10); 
+
+        rb.setIcon(RADIO_DEFAULT_ICON);
+        rb.setSelectedIcon(RADIO_SELECTED_ICON);
+        rb.setRolloverIcon(RADIO_HOVER_ICON);
+        rb.setRolloverSelectedIcon(RADIO_SELECTED_HOVER_ICON);
+
         return rb;
     }
+
+    private static Icon createRadioButtonIcon(boolean isSelected, boolean isHover) {
+        int size = 18;
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+
+        // Activar antialiasing para bordes suaves
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Dibujar el círculo exterior
+        g2.setColor(isHover ? Color.BLACK : Color.GRAY);
+        g2.setStroke(new BasicStroke(1.8f));
+        g2.drawOval(1, 1, size - 3, size - 3); // Dejar un pequeño margen
+
+        // Si está seleccionado, dibujar el círculo interior
+        if (isSelected) {
+            g2.setColor(isHover ? GlobalView.ASIDE_BACKGROUND.darker() : GlobalView.ASIDE_BACKGROUND);
+            g2.fillOval(5, 5, size - 10, size - 10);
+        }
+
+        g2.dispose();
+        return new ImageIcon(image);
+    }
+
 
     private void applyFilters() {
         String search = searchField.getText().trim().toLowerCase();
@@ -213,7 +302,11 @@ public class TiresProductPanel extends JPanel {
             filteredTires.sort(Comparator.comparingInt(a -> a.getInt("precio")));
         }
 
-        currentPage = 1;
+        int totalPages = (int) Math.ceil((double) filteredTires.size() / ITEMS_PER_PAGE);
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        }
+
         updateGrid();
         updatePagination();
     }
@@ -371,7 +464,7 @@ public class TiresProductPanel extends JPanel {
             pageBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
             pageBtn.setPreferredSize(new Dimension(45, 45));
             pageBtn.setBackground(i == currentPage ? GlobalView.ASIDE_BACKGROUND
-                    : GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE);
+                    : GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
             pageBtn.addActionListener(e -> {
                 currentPage = page;
                 updateGrid();
@@ -394,7 +487,7 @@ public class TiresProductPanel extends JPanel {
         addBtn = new JButton(new ImageIcon(p.getProperties("add")));
 
         for (JButton btn : new JButton[] { editBtn, deleteBtn, addBtn }) {
-            btn.setBackground(GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE);
+            btn.setBackground(GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
             btn.setFocusPainted(false);
             btn.setBorder(new LineBorder(Color.GRAY, 1, true));
             btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -407,8 +500,8 @@ public class TiresProductPanel extends JPanel {
             if (selectedTire == null)
                 return;
 
-            EditTirePanel editPanel = new EditTirePanel(
-                    selectedTire,
+            EditCreateProductPanel editPanel = new EditCreateProductPanel(
+                    "Editar Producto", selectedTire,
                     updatedTire -> {
                         selectedTire.put("nombre", updatedTire.getString("nombre"));
                         selectedTire.put("marca", updatedTire.getString("marca"));
@@ -416,6 +509,7 @@ public class TiresProductPanel extends JPanel {
                         selectedTire.put("stock", updatedTire.getInt("stock"));
                         selectedTire.put("imagen", updatedTire.getString("imagen"));
                         applyFilters();
+                        saveTiresToJson("src/main/resources/JSON/tires.json");
                     },
                     this,
                     controller);
@@ -428,7 +522,6 @@ public class TiresProductPanel extends JPanel {
             Dimension size = this.getSize();
             editDialog.setBounds(location.x, location.y, size.width, size.height);
             editDialog.setVisible(true);
-            new SuccessPopUp(null, "Éxito:", "El producto se actualizó exitosamente.");
         });
 
         deleteBtn.addActionListener(e -> {
@@ -444,6 +537,7 @@ public class TiresProductPanel extends JPanel {
             if (confirmed) {
                 allTires.remove(selectedTire);
                 applyFilters();
+                saveTiresToJson("src/main/resources/JSON/tires.json");
                 selectedTire = null;
                 editBtn.setEnabled(false);
                 deleteBtn.setEnabled(false);
@@ -451,7 +545,37 @@ public class TiresProductPanel extends JPanel {
             }
         });
 
-        addBtn.addActionListener(e -> System.out.println("Agregar producto"));
+        addBtn.addActionListener(e -> {
+            JSONObject newTire = new JSONObject();
+            newTire.put("nombre", "");
+            newTire.put("marca", "");
+            newTire.put("precio", 0);
+            newTire.put("stock", 0);
+            newTire.put("imagen", "");
+
+            EditCreateProductPanel addPanel = new EditCreateProductPanel(
+                    "Crear producto",
+                    newTire,
+                    addedTire -> {
+                        allTires.add(addedTire);
+                        applyFilters();
+                        saveTiresToJson("src/main/resources/JSON/tires.json");
+                        Frame frame = (Frame) SwingUtilities.getWindowAncestor(this);
+                        new SuccessPopUp(frame, "Éxito:", "El producto se añadió exitosamente.");
+
+                    },
+                    this,
+                    controller);
+
+            JDialog addDialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Agregar producto",
+                    Dialog.ModalityType.APPLICATION_MODAL);
+            addDialog.setUndecorated(true);
+            addDialog.setContentPane(addPanel);
+            Point location = this.getLocationOnScreen();
+            Dimension size = this.getSize();
+            addDialog.setBounds(location.x, location.y, size.width, size.height);
+            addDialog.setVisible(true);
+        });
 
         actionPanel.add(editBtn);
         actionPanel.add(deleteBtn);
@@ -467,7 +591,7 @@ public class TiresProductPanel extends JPanel {
 
     private JButton createStyledButton(String text) {
         JButton btn = new JButton(text);
-        btn.setBackground(GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE);
+        btn.setBackground(GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
         btn.setForeground(Color.WHITE);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setFocusPainted(false);
@@ -485,7 +609,7 @@ public class TiresProductPanel extends JPanel {
             @Override
             public void mouseExited(MouseEvent e) {
                 if (!(btn.getText().equals(String.valueOf(currentPage))))
-                    btn.setBackground(GlobalView.ASIDE_BUTTONS_BACKGROUND_ACTIVE);
+                    btn.setBackground(GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
             }
         });
 

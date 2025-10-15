@@ -1,0 +1,44 @@
+[
+    {
+        "nombre": "Pastillas Cerámicas D1044",
+        "marca": "Wagner",
+        "precio": 180000,
+        "stock": 75,
+        "imagen": "src/main/resources/img/products/wagner_d1044.png"
+    },
+    {
+        "nombre": "Pastillas Semi-Metálicas",
+        "marca": "Brembo",
+        "precio": 250000,
+        "stock": 50,
+        "imagen": "src/main/resources/img/products/brembo_semi.png"
+    },
+    {
+        "nombre": "Kit de Frenos Delanteros",
+        "marca": "ACDelco",
+        "precio": 210000,
+        "stock": 60,
+        "imagen": "src/main/resources/img/products/acdelco_brakes.png"
+    },
+    {
+        "nombre": "Pastillas Pro-Series",
+        "marca": "Raybestos",
+        "precio": 165000,
+        "stock": 90,
+        "imagen": "src/main/resources/img/products/raybestos_pro.png"
+    },
+    {
+        "nombre": "Zapatas de Freno Trasero",
+        "marca": "Bosch",
+        "precio": 130000,
+        "stock": 110,
+        "imagen": "src/main/resources/img/products/bosch_zapatas.png"
+    },
+    {
+        "nombre": "Pastillas Blue Racing",
+        "marca": "Ferodo",
+        "precio": 320000,
+        "stock": 30,
+        "imagen": "src/main/resources/img/products/ferodo_blue.png"
+    }
+]

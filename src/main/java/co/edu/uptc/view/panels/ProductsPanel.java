@@ -27,9 +27,9 @@ public class ProductsPanel extends JPanel {
 
         JPanel[] panels = {
                 new TiresProductPanel(controller),
-                new LubFiltersProductPanel(),
-                new BateryProductPanel(),
-                new BrakePadsProductPanel()
+                new LubFiltersProductPanel(controller),
+                new BateryProductPanel(controller),
+                new BrakePadsProductPanel(controller)
         };
 
         for (int i = 0; i < 4; i++) {

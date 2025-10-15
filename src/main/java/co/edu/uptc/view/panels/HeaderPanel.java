@@ -21,7 +21,7 @@ public class HeaderPanel extends JPanel {
     public HeaderPanel() {
         p = new PropertiesService();
         setLayout(new BorderLayout());
-        setBackground(GlobalView.HEADER_BACKGROUND);
+        setBackground(GlobalView.HEADER_BACKGROUND); 
         setPreferredSize(new Dimension(0, 100));
 
         JPanel content = new JPanel(new BorderLayout());
@@ -29,8 +29,8 @@ public class HeaderPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(23, 23, 23, 23));
 
         lblFechaHora = new JLabel(formatFecha());
-        lblFechaHora.setForeground(Color.WHITE);
-        lblFechaHora.setFont(new Font("SansSerif", Font.BOLD, 20));
+        lblFechaHora.setForeground(GlobalView.HEADER_TEXT_COLOR); 
+        lblFechaHora.setFont(GlobalView.BODY_FONT.deriveFont(Font.BOLD, 20f)); 
         content.add(lblFechaHora, BorderLayout.WEST);
 
         Timer timer = new Timer(60000, e -> lblFechaHora.setText(formatFecha()));
@@ -46,20 +46,23 @@ public class HeaderPanel extends JPanel {
                 "Cerrar",
                 iconSalir,
                 15,
-                GlobalView.CLOSE_BUTTON_BACKGROUND,
-                GlobalView.CLOSE_BUTTON_BACKGROUND_HOVER,
-                null
+                GlobalView.CLOSE_BUTTON_BACKGROUND, 
+                GlobalView.CLOSE_BUTTON_HOVER_COLOR, 
+                null 
         );
+
+        btnCerrar.setForeground(GlobalView.LIGHT_TEXT_COLOR);
+        btnCerrar.setFont(GlobalView.BUTTON_FONT); 
 
         btnCerrar.addActionListener(e -> {
             boolean confirm = co.edu.uptc.view.dialogs.ConfirmDialog.showConfirmDialog(
-                    null,
+                    null, 
                     "¿Está seguro de querer cerrar la aplicación?",
                     "Confirmar salida"
             );
 
             if (confirm) {
-                System.exit(0);
+                System.exit(0); 
             }
         });
 
@@ -67,8 +70,17 @@ public class HeaderPanel extends JPanel {
         add(content, BorderLayout.CENTER);
     }
 
+    /**
+     * Formatea la fecha y hora actual en un String localizado.
+     * Convierte la primera letra a mayúscula para que "Hoy es" inicie correctamente.
+     * @return String con la fecha y hora formateadas.
+     */
     private String formatFecha() {
         String texto = formato.format(new Date()).toLowerCase();
-        return "H" + texto.substring(1);
+        // Capitaliza la primera letra después de "hoy es"
+        if (texto.length() > 0) {
+            return "H" + texto.substring(1);
+        }
+        return texto;
     }
 }

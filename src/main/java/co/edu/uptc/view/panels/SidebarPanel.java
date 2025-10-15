@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import co.edu.uptc.view.utils.PropertiesService;
 import co.edu.uptc.view.utils.ViewController;
 import co.edu.uptc.view.GlobalView;
@@ -15,26 +14,46 @@ public class SidebarPanel extends JPanel {
     private final PropertiesService p;
     private SidebarButton activeButton;
     private final List<SidebarButton> buttons = new ArrayList<>();
+    private final ViewController controller;
 
     public SidebarPanel(ViewController controller) {
-        p = new PropertiesService();
+        this.controller = controller;
+        this.p = new PropertiesService();
+        
         setLayout(new BorderLayout());
         setBackground(GlobalView.ASIDE_BACKGROUND);
         setPreferredSize(new Dimension(250, 0));
 
+        add(createLogoPanel(), BorderLayout.NORTH);
+        add(createButtonsPanel(), BorderLayout.CENTER);
+    }
+
+    private JPanel createLogoPanel() {
         JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
-        logoPanel.setPreferredSize(new Dimension(250, 180)); 
+        logoPanel.setPreferredSize(new Dimension(250, 180));
 
         JLabel logoLabel = new JLabel();
         ImageIcon logoIcon = new ImageIcon(p.getProperties("logo"));
-
         Image scaledLogo = logoIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         logoLabel.setIcon(new ImageIcon(scaledLogo));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         logoLabel.setVerticalAlignment(SwingConstants.TOP);
+        
         logoPanel.add(logoLabel, BorderLayout.CENTER);
 
+        logoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        logoLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                controller.showPanel(new WelcomePanel());
+                setActiveButton(null); 
+            }
+        });
+
+        return logoPanel;
+    }
+
+    private JPanel createButtonsPanel() {
         JPanel buttonsPanel = new JPanel(new GridLayout(5, 1, 0, 25));
         buttonsPanel.setBackground(GlobalView.ASIDE_BACKGROUND);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
@@ -75,14 +94,13 @@ public class SidebarPanel extends JPanel {
         buttonsPanel.add(btnVentas);
         buttonsPanel.add(btnReportes);
 
-        add(logoPanel, BorderLayout.NORTH);
-        add(buttonsPanel, BorderLayout.CENTER);
-
         buttons.add(btnProductos);
         buttons.add(btnServicios);
         buttons.add(btnCompras);
         buttons.add(btnVentas);
         buttons.add(btnReportes);
+        
+        return buttonsPanel;
     }
 
     private SidebarButton createSidebarButton(String text, ImageIcon icon, Runnable onClick) {
@@ -95,8 +113,8 @@ public class SidebarPanel extends JPanel {
     }
 
     public void setActiveButton(SidebarButton button) {
-        for (SidebarButton b : buttons) {
-            b.setActive(false);
+        if (activeButton != null) {
+            activeButton.setActive(false);
         }
         if (button != null) {
             button.setActive(true);

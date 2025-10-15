@@ -1,0 +1,65 @@
+[
+    {
+        "marca": "Mobil 1",
+        "precio": 150000,
+        "imagen": "src/main/resources/img/products/mobil1_5w30.png",
+        "stock": 45,
+        "nombre": "Aceite Sintético 5W-30"
+    },
+    {
+        "marca": "ACDelco",
+        "precio": 25000,
+        "imagen": "src/main/resources/img/products/acdelco_pf47.png",
+        "stock": 120,
+        "nombre": "Filtro de Aceite PF47"
+    },
+    {
+        "marca": "Havoline",
+        "precio": 85000,
+        "imagen": "src/main/resources/img/products/havoline_20w50.png",
+        "stock": 80,
+        "nombre": "Aceite Mineral 20W-50"
+    },
+    {
+        "marca": "Bosch",
+        "precio": 35000,
+        "imagen": "src/main/resources/img/products/bosch_dot4.png",
+        "stock": 95,
+        "nombre": "Líquido de Frenos DOT 4"
+    },
+    {
+        "marca": "Mann-Filter",
+        "precio": 65000,
+        "imagen": "src/main/resources/img/products/mann_c24025.png",
+        "stock": 60,
+        "nombre": "Filtro de Aire C24025"
+    },
+    {
+        "marca": "Prestone",
+        "precio": 45000,
+        "imagen": "src/main/resources/img/products/prestone_coolant.png",
+        "stock": 110,
+        "nombre": "Refrigerante Coolant"
+    },
+    {
+        "marca": "Castrol",
+        "precio": 110000,
+        "imagen": "C:\\Users\\oscar\\OneDrive\\Imágenes\\Screenshots\\Captura de pantalla 2025-10-14 172156.png",
+        "stock": 70,
+        "nombre": "Aceite Semi-Sintético 10W-40"
+    },
+    {
+        "marca": "Fram",
+        "precio": 55000,
+        "imagen": "src/main/resources/img/products/fram_cf10134.png",
+        "stock": 85,
+        "nombre": "Filtro de Cabina CF10134"
+    },
+    {
+        "marca": "STP",
+        "precio": 28000,
+        "imagen": "src/main/resources/img/products/stp_injector.png",
+        "stock": 150,
+        "nombre": "Aditivo Limpia Inyectores"
+    }
+]

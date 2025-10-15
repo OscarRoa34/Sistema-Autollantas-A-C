@@ -1,0 +1,44 @@
+[
+    {
+        "nombre": "Batería Gold 12V",
+        "marca": "MAC",
+        "precio": 380000,
+        "stock": 40,
+        "imagen": "src/main/resources/img/products/mac_gold.png"
+    },
+    {
+        "nombre": "Batería S5 AGM",
+        "marca": "Bosch",
+        "precio": 520000,
+        "stock": 25,
+        "imagen": "src/main/resources/img/products/bosch_s5.png"
+    },
+    {
+        "nombre": "Batería Silver Dynamic",
+        "marca": "Varta",
+        "precio": 450000,
+        "stock": 30,
+        "imagen": "src/main/resources/img/products/varta_silver.png"
+    },
+    {
+        "nombre": "Batería de Gel",
+        "marca": "Optima",
+        "precio": 650000,
+        "stock": 15,
+        "imagen": "src/main/resources/img/products/optima_yellow.png"
+    },
+    {
+        "nombre": "Batería Standard 42Ah",
+        "marca": "ACDelco",
+        "precio": 320000,
+        "stock": 55,
+        "imagen": "src/main/resources/img/products/acdelco_battery.png"
+    },
+    {
+        "nombre": "Batería Titanio",
+        "marca": "Willard",
+        "precio": 360000,
+        "stock": 48,
+        "imagen": "src/main/resources/img/products/willard_titanio.png"
+    }
+]

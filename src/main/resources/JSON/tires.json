@@ -1,18 +1,65 @@
 [
-    {"nombre": "Llanta Auto 175/70R13T", "precio": 146800, "marca": "Wanli", "stock": 2, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 205/80R15", "precio": 215000, "marca": "Hankook", "stock": 4, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/60R14", "precio": 185000, "marca": "DoubleStar", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 225/75R16", "precio": 398000, "marca": "Hankook", "stock": 2, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 165/70R13", "precio": 139000, "marca": "Wanli", "stock": 5, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 235/60R16", "precio": 458000, "marca": "DoubleStar", "stock": 1, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 195/65R15", "precio": 199000, "marca": "Wanli", "stock": 2, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Hankook", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Oscar", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "David", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Davidasdasd", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Davidddd", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llanta Auto 185/65R14", "precio": 169000, "marca": "Leonardo", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-    {"nombre": "Llaccc", "precio": 169000, "marca": "Leonardo", "stock": 3, "imagen": "src/main/resources/Images/welcomePanelBG.png"},
-   
-    {"nombre": "Llanta Auto 175/70R14", "precio": 156000, "marca": "DoubleStar", "stock": 6, "imagen": "src/main/resources/Images/welcomePanelBG.png"}
+    {
+        "marca": "Wanli",
+        "precio": 146800,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 2,
+        "nombre": "Llanta Auto 175/70R13T"
+    },
+    {
+        "marca": "Hankook",
+        "precio": 215000,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 4,
+        "nombre": "Llanta Auto 205/80R15"
+    },
+    {
+        "marca": "Hankook",
+        "precio": 398000,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 2,
+        "nombre": "Llanta Auto 225/75R16"
+    },
+    {
+        "marca": "Wanli",
+        "precio": 139000,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 5,
+        "nombre": "Llanta Auto 165/70R13"
+    },
+    {
+        "marca": "DoubleStar",
+        "precio": 458000,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 1,
+        "nombre": "Llanta Auto 235/60R16"
+    },
+    {
+        "marca": "David",
+        "precio": 169000,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 23,
+        "nombre": "Llanta Auto 185/65R14"
+    },
+    {
+        "marca": "Leonardo",
+        "precio": 169000,
+        "imagen": "src/main/resources/Images/welcomePanelBG.png",
+        "stock": 3,
+        "nombre": "Llanta Auto 185/65R14"
+    },
+    {
+        "marca": "asd",
+        "precio": 142,
+        "imagen": "C:\\Users\\oscar\\OneDrive\\Imágenes\\Screenshots\\Captura de pantalla 2025-10-14 114505.png",
+        "stock": 0,
+        "nombre": "asd"
+    },
+    {
+        "marca": "oscar",
+        "precio": 123123,
+        "imagen": "",
+        "stock": 123123,
+        "nombre": "Llanta 123123123"
+    }
 ]
