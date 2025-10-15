@@ -42,13 +42,6 @@
         "nombre": "Refrigerante Coolant"
     },
     {
-        "marca": "Castrol",
-        "precio": 110000,
-        "imagen": "C:\\Users\\oscar\\OneDrive\\Imágenes\\Screenshots\\Captura de pantalla 2025-10-14 172156.png",
-        "stock": 70,
-        "nombre": "Aceite Semi-Sintético 10W-40"
-    },
-    {
         "marca": "Fram",
         "precio": 55000,
         "imagen": "src/main/resources/img/products/fram_cf10134.png",

@@ -71,13 +71,13 @@ public class SidebarPanel extends JPanel {
         );
 
         SidebarButton btnCompras = createSidebarButton(
-                "Gestión de Facturas de Compra",
+                "Gestión de registros de Compra",
                 new ImageIcon(p.getProperties("purchase")),
                 () -> controller.showPanel(new PurchasePanel())
         );
 
         SidebarButton btnVentas = createSidebarButton(
-                "Gestión de Facturas de Venta",
+                "Gestión de registros de Venta",
                 new ImageIcon(p.getProperties("sales")),
                 () -> controller.showPanel(new SalesPanel())
         );

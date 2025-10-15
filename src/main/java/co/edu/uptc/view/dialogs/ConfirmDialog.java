@@ -116,7 +116,6 @@ public boolean isConfirmed() {
     public static void showErrorDialog(Window parent, String message, String title) {
         ConfirmDialog dialog = new ConfirmDialog(parent, message, title);
 
-        // Cambiar colores y botones para mostrar error
         for (Component comp : ((JPanel) ((JPanel) dialog.getContentPane().getComponent(0))
                 .getComponent(1)).getComponents()) {
             if (comp instanceof JButton) {

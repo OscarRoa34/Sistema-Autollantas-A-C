@@ -70,14 +70,8 @@ public class HeaderPanel extends JPanel {
         add(content, BorderLayout.CENTER);
     }
 
-    /**
-     * Formatea la fecha y hora actual en un String localizado.
-     * Convierte la primera letra a mayúscula para que "Hoy es" inicie correctamente.
-     * @return String con la fecha y hora formateadas.
-     */
     private String formatFecha() {
         String texto = formato.format(new Date()).toLowerCase();
-        // Capitaliza la primera letra después de "hoy es"
         if (texto.length() > 0) {
             return "H" + texto.substring(1);
         }

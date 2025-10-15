@@ -211,42 +211,30 @@ public class EditCreateProductPanel extends JPanel {
     }
 
     private void chooseImage() {
-        // 1. Guardar el Look and Feel actual para poder restaurarlo después.
         LookAndFeel originalLaf = UIManager.getLookAndFeel();
-
         try {
-            // 2. Establecer el Look and Feel del sistema operativo (Windows en este caso).
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // 3. Crear y configurar el JFileChooser DESPUÉS de cambiar el L&F.
             JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
             chooser.setDialogTitle("Seleccionar una imagen");
             chooser.setAcceptAllFileFilterUsed(false);
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Imágenes (JPG, PNG, GIF)", "jpg", "jpeg",
                     "png", "gif");
             chooser.addChoosableFileFilter(filter);
-
-            // Forzar la actualización de la UI del chooser para que tome el nuevo L&F.
             SwingUtilities.updateComponentTreeUI(chooser);
-
-            // 4. Mostrar el diálogo.
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
                 String path = selectedFile.getAbsolutePath();
                 imagenField.setText(path);
                 updateImagePreview(path);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "No se pudo abrir el selector de archivos con el estilo de Windows.",
                     "Error de UI", JOptionPane.WARNING_MESSAGE);
-
         } finally {
             try {
                 UIManager.setLookAndFeel(originalLaf);
             } catch (UnsupportedLookAndFeelException ex) {
-                System.err.println("Error al restaurar el Look and Feel original: " + ex.getMessage());
             }
         }
     }
@@ -268,9 +256,6 @@ public class EditCreateProductPanel extends JPanel {
         }
     }
 
-    /**
-     * @return true si todos los campos son válidos, false en caso contrario.
-     */
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
         String nombre = nombreField.getText().trim();
