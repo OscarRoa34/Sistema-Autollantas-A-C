@@ -1,9 +1,15 @@
 package co.edu.uptc.view;
 
-import javax.swing.*;
-import co.edu.uptc.view.panels.*;
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import co.edu.uptc.view.panels.HeaderPanel;
+import co.edu.uptc.view.panels.SidebarPanel;
+import co.edu.uptc.view.panels.WelcomePanel;
 import co.edu.uptc.view.utils.ViewController;
-import java.awt.*;
 
 public class MainFrame extends JFrame {
     private SidebarPanel sidebar;

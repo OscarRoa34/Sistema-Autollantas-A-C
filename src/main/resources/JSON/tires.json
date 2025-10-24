@@ -61,5 +61,12 @@
         "imagen": "",
         "stock": 123123,
         "nombre": "Llanta 123123123"
+    },
+    {
+        "marca": "Mujer",
+        "precio": 1,
+        "imagen": "",
+        "stock": 1,
+        "nombre": "Andrea"
     }
 ]
