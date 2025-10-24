@@ -1,0 +1,22 @@
+[
+  {
+    "productType": "Tire",
+    "size": "205/55R16",
+    "type": "Deportivo",
+    "id": "T001",
+    "name": "Llanta Pilot Sport 4",
+    "brand": "Michelin",
+    "price": 250.99,
+    "stock": 15
+  },
+  {
+    "productType": "Tire",
+    "size": "265/70R17",
+    "type": "Todo Terreno",
+    "id": "T002",
+    "name": "Llanta Dueler H/T",
+    "brand": "Bridgestone",
+    "price": 180.5,
+    "stock": 8
+  }
+]
