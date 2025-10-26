@@ -1,0 +1,53 @@
+package co.edu.uptc.views;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import co.edu.uptc.view.panels.HeaderPanel;
+import co.edu.uptc.view.panels.SidebarPanel;
+import co.edu.uptc.view.panels.WelcomePanel;
+import co.edu.uptc.view.utils.ViewController;
+
+public class MainFrame extends JFrame {
+    private SidebarPanel sidebar;
+    private JPanel mainContainer;
+    private ViewController controller;
+
+    public MainFrame() {
+        setTitle("Autollantas A&C");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        setUndecorated(true);
+
+        setExtendedState(MAXIMIZED_BOTH);
+        setLayout(new BorderLayout());
+
+        sidebar = new SidebarPanel(null); 
+
+        mainContainer = new JPanel(new BorderLayout());
+        controller = new ViewController(mainContainer);
+        sidebar = new SidebarPanel(controller);
+        controller.showPanel(new WelcomePanel());
+
+        HeaderPanel header = new HeaderPanel();
+
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(header, BorderLayout.NORTH);
+        rightPanel.add(mainContainer, BorderLayout.CENTER);
+
+        JPanel mainLayout = new JPanel(new BorderLayout());
+        mainLayout.add(sidebar, BorderLayout.WEST);
+        mainLayout.add(rightPanel, BorderLayout.CENTER);
+
+        add(mainLayout, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MainFrame::new);
+    }
+}

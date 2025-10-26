@@ -1,0 +1,38 @@
+package co.edu.uptc.views.utils;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.json.JSONArray;
+
+public class PropertiesService {
+
+    Properties p = new Properties();
+
+    public void load() {
+
+        try {
+            p.load(new FileInputStream("src\\main\\resources\\config.properties"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveTiresData(JSONArray data) {
+    try (FileWriter file = new FileWriter("src/data/tires.json")) {
+        file.write(data.toString(4));
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+    public String getProperties(String keyName) {
+        load();
+        return p.getProperty(keyName);
+    }
+}

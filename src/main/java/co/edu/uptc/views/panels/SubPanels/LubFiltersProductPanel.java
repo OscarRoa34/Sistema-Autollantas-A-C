@@ -1,4 +1,4 @@
-package co.edu.uptc.view.panels.SubPanels;
+package co.edu.uptc.views.panels.SubPanels;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -63,7 +64,7 @@ import co.edu.uptc.view.utils.PropertiesService;
 import co.edu.uptc.view.utils.TextPrompt;
 import co.edu.uptc.view.utils.ViewController;
 
-public class BateryProductPanel extends JPanel {
+public class LubFiltersProductPanel extends JPanel {
 
     private List<JSONObject> allProducts;
     private List<JSONObject> filteredProducts;
@@ -79,22 +80,24 @@ public class BateryProductPanel extends JPanel {
     private int currentPage = 1;
     private final int ITEMS_PER_PAGE = 8;
     private final ViewController controller;
-    private static final String JSON_FILE_PATH = "src/main/resources/JSON/batteries.json";
+    private static final String JSON_FILE_PATH = "src/main/resources/JSON/lubricants_filters.json";
 
-    // --- Iconos personalizados (reutilizados) ---
+
+    // --- Iconos personalizados para los JCheckBox (reutilizados) ---
     private static final Icon CHECKBOX_DEFAULT_ICON = createCheckboxIcon(false, false);
     private static final Icon CHECKBOX_SELECTED_ICON = createCheckboxIcon(true, false);
     private static final Icon CHECKBOX_HOVER_ICON = createCheckboxIcon(false, true);
     private static final Icon CHECKBOX_SELECTED_HOVER_ICON = createCheckboxIcon(true, true);
 
+    // --- Iconos personalizados para los JRadioButton (reutilizados) ---
     private static final Icon RADIO_DEFAULT_ICON = createRadioButtonIcon(false, false);
     private static final Icon RADIO_SELECTED_ICON = createRadioButtonIcon(true, false);
     private static final Icon RADIO_HOVER_ICON = createRadioButtonIcon(false, true);
     private static final Icon RADIO_SELECTED_HOVER_ICON = createRadioButtonIcon(true, true);
 
-    public BateryProductPanel(ViewController controller) {
+    public LubFiltersProductPanel(ViewController controller) {
         this.controller = controller;
-        this.p = new PropertiesService();
+        p = new PropertiesService();
 
         setLayout(new BorderLayout());
         setBackground(GlobalView.GENERAL_BACKGROUND);
@@ -108,6 +111,7 @@ public class BateryProductPanel extends JPanel {
         filteredProducts = new ArrayList<>(allProducts);
 
         filtersPanel = createFilterPanel();
+        filtersPanel.setBackground(GlobalView.GENERAL_BACKGROUND);
         add(filtersPanel, BorderLayout.EAST);
 
         gridPanel = new JPanel(new GridLayout(2, 4, 10, 10));
@@ -130,7 +134,7 @@ public class BateryProductPanel extends JPanel {
             return new JSONArray(content);
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al leer el archivo JSON: " + path, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo JSON.", "Error", JOptionPane.ERROR_MESSAGE);
             return new JSONArray();
         }
     }
@@ -141,7 +145,8 @@ public class BateryProductPanel extends JPanel {
             Files.write(Paths.get(path), array.toString(4).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al guardar el archivo JSON.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al guardar el archivo JSON.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -167,7 +172,9 @@ public class BateryProductPanel extends JPanel {
         searchField = new JTextField();
         searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        new TextPrompt("Nombre de la batería", searchField);
+        searchField.setBackground(Color.white);
+        searchField.setForeground(Color.black);
+        new TextPrompt("Nombre del producto", searchField);
         searchField.setBorder(new CompoundBorder(
                 new LineBorder(Color.GRAY, 1, true),
                 new EmptyBorder(5, 8, 5, 8)));
@@ -183,20 +190,21 @@ public class BateryProductPanel extends JPanel {
         lblMarca.setForeground(Color.BLACK);
         lblMarca.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        Map<String, Long> brandCount = allProducts.stream()
-                .collect(Collectors.groupingBy(p -> p.getString("marca"), LinkedHashMap::new, Collectors.counting()));
+        Map<String, Long> conteoMarcas = allProducts.stream()
+                .collect(Collectors.groupingBy(t -> t.getString("marca"), LinkedHashMap::new, Collectors.counting()));
 
-        List<String> brandList = brandCount.entrySet().stream()
+        List<String> marcasList = conteoMarcas.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder()))
                 .limit(8)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        brandCheckboxes = new ArrayList<>();
-        for (String brand : brandList) {
-            JCheckBox chk = createStyledCheckBox(brand);
+        List<JCheckBox> marcaCheckboxes = new ArrayList<>();
+
+        for (String marca : marcasList) {
+            JCheckBox chk = createStyledCheckBox(marca);
             chk.addActionListener(e -> applyFilters());
-            brandCheckboxes.add(chk);
+            marcaCheckboxes.add(chk);
         }
 
         JLabel lblPrecio = new JLabel("Precio");
@@ -221,27 +229,113 @@ public class BateryProductPanel extends JPanel {
         panel.add(searchField);
         panel.add(Box.createVerticalStrut(15));
         panel.add(lblMarca);
-        for (JCheckBox chk : brandCheckboxes)
+        for (JCheckBox chk : marcaCheckboxes)
             panel.add(chk);
         panel.add(Box.createVerticalStrut(15));
         panel.add(lblPrecio);
         panel.add(rbMayorPrecio);
         panel.add(rbMenorPrecio);
         panel.add(Box.createVerticalGlue());
+        brandCheckboxes = marcaCheckboxes;
 
         return panel;
     }
 
+    private JCheckBox createStyledCheckBox(String text) {
+        JCheckBox chk = new JCheckBox(text);
+        chk.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        chk.setForeground(Color.BLACK);
+        chk.setBackground(GlobalView.GENERAL_BACKGROUND);
+        chk.setFocusPainted(false);
+        chk.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        chk.setAlignmentX(Component.LEFT_ALIGNMENT);
+        chk.setBorder(new EmptyBorder(4, 0, 4, 0)); 
+        chk.setIconTextGap(10); 
+
+        chk.setIcon(CHECKBOX_DEFAULT_ICON);
+        chk.setSelectedIcon(CHECKBOX_SELECTED_ICON);
+        chk.setRolloverIcon(CHECKBOX_HOVER_ICON);
+        chk.setRolloverSelectedIcon(CHECKBOX_SELECTED_HOVER_ICON);
+
+        return chk;
+    }
+
+    private static Icon createCheckboxIcon(boolean isSelected, boolean isHover) {
+        int width = 18;
+        int height = 18;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        if (isSelected) {
+            g2.setColor(isHover ? GlobalView.ASIDE_BACKGROUND.darker() : GlobalView.ASIDE_BACKGROUND);
+            g2.fill(new RoundRectangle2D.Float(0, 0, width, height, 5, 5));
+            g2.setColor(Color.WHITE);
+            g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.drawLine(5, 9, 8, 12);
+            g2.drawLine(8, 12, 14, 6);
+        } else {
+            g2.setColor(isHover ? Color.BLACK : Color.GRAY);
+            g2.setStroke(new BasicStroke(1.8f));
+            g2.draw(new RoundRectangle2D.Float(1, 1, width - 2, height - 2, 5, 5));
+        }
+
+        g2.dispose();
+        return new ImageIcon(image);
+    }
+    
+    private JRadioButton createStyledRadio(String text) {
+        JRadioButton rb = new JRadioButton(text);
+        rb.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        rb.setForeground(Color.BLACK);
+        rb.setBackground(GlobalView.GENERAL_BACKGROUND);
+        rb.setFocusPainted(false);
+        rb.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rb.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rb.setBorder(new EmptyBorder(4, 0, 4, 0)); 
+        rb.setIconTextGap(10); 
+
+        rb.setIcon(RADIO_DEFAULT_ICON);
+        rb.setSelectedIcon(RADIO_SELECTED_ICON);
+        rb.setRolloverIcon(RADIO_HOVER_ICON);
+        rb.setRolloverSelectedIcon(RADIO_SELECTED_HOVER_ICON);
+
+        return rb;
+    }
+
+    private static Icon createRadioButtonIcon(boolean isSelected, boolean isHover) {
+        int size = 18;
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2.setColor(isHover ? Color.BLACK : Color.GRAY);
+        g2.setStroke(new BasicStroke(1.8f));
+        g2.drawOval(1, 1, size - 3, size - 3);
+
+        if (isSelected) {
+            g2.setColor(isHover ? GlobalView.ASIDE_BACKGROUND.darker() : GlobalView.ASIDE_BACKGROUND);
+            g2.fillOval(5, 5, size - 10, size - 10);
+        }
+
+        g2.dispose();
+        return new ImageIcon(image);
+    }
+
+
     private void applyFilters() {
         String search = searchField.getText().trim().toLowerCase();
-        List<String> selectedBrands = brandCheckboxes.stream()
+
+        List<String> marcas = brandCheckboxes.stream()
                 .filter(AbstractButton::isSelected)
                 .map(AbstractButton::getText)
                 .collect(Collectors.toList());
 
         filteredProducts = allProducts.stream()
-                .filter(p -> p.getString("nombre").toLowerCase().contains(search))
-                .filter(p -> selectedBrands.isEmpty() || selectedBrands.contains(p.getString("marca")))
+                .filter(t -> t.getString("nombre").toLowerCase().contains(search))
+                .filter(t -> marcas.isEmpty() || marcas.contains(t.getString("marca")))
                 .collect(Collectors.toList());
 
         if (rbMayorPrecio.isSelected()) {
@@ -253,8 +347,6 @@ public class BateryProductPanel extends JPanel {
         int totalPages = (int) Math.ceil((double) filteredProducts.size() / ITEMS_PER_PAGE);
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
-        } else if (totalPages == 0) {
-            currentPage = 1;
         }
 
         updateGrid();
@@ -263,17 +355,18 @@ public class BateryProductPanel extends JPanel {
 
     private void updateGrid() {
         gridPanel.removeAll();
+
         int start = (currentPage - 1) * ITEMS_PER_PAGE;
         int end = Math.min(start + ITEMS_PER_PAGE, filteredProducts.size());
 
         for (int i = start; i < end; i++) {
-            gridPanel.add(createCard(filteredProducts.get(i)));
+            JSONObject product = filteredProducts.get(i);
+            JPanel card = createCard(product);
+            gridPanel.add(card);
         }
 
         for (int i = end; i < start + ITEMS_PER_PAGE; i++) {
-            JPanel emptyPanel = new JPanel();
-            emptyPanel.setBackground(GlobalView.GENERAL_BACKGROUND);
-            gridPanel.add(emptyPanel);
+            gridPanel.add(new JLabel());
         }
 
         gridPanel.revalidate();
@@ -281,7 +374,7 @@ public class BateryProductPanel extends JPanel {
     }
 
     private JPanel createCard(JSONObject product) {
-        JPanel card = new JPanel(new BorderLayout(0, 5));
+        JPanel card = new JPanel(new BorderLayout());
         card.setBackground(GlobalView.CARDS_BACKGROUND);
         card.setBorder(new CompoundBorder(
                 new LineBorder(Color.LIGHT_GRAY, 1, true),
@@ -297,13 +390,29 @@ public class BateryProductPanel extends JPanel {
             imageLabel.setText("Sin imagen");
         }
 
+        JLabel nameLabel = new JLabel(product.getString("nombre"));
+        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel brandLabel = new JLabel("Marca: " + product.getString("marca"));
+        brandLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel priceLabel = new JLabel("Precio por unidad: $ " + product.getInt("precio"));
+        priceLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel stockLabel = new JLabel("Stock: " + product.getInt("stock") + " unidades");
+        stockLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        stockLabel.setForeground(Color.GRAY);
+        stockLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         JPanel infoPanel = new JPanel(new GridLayout(4, 1));
         infoPanel.setBackground(GlobalView.CARDS_BACKGROUND);
-        
-        infoPanel.add(new JLabel(product.getString("nombre"), SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.BOLD, 14)); }});
-        infoPanel.add(new JLabel("Marca: " + product.getString("marca"), SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.PLAIN, 12)); }});
-        infoPanel.add(new JLabel("Precio: $" + product.getInt("precio"), SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.PLAIN, 12)); }});
-        infoPanel.add(new JLabel("Stock: " + product.getInt("stock") + " uds", SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.ITALIC, 11)); setForeground(Color.GRAY); }});
+        infoPanel.add(nameLabel);
+        infoPanel.add(brandLabel);
+        infoPanel.add(priceLabel);
+        infoPanel.add(stockLabel);
 
         card.add(imageLabel, BorderLayout.NORTH);
         card.add(infoPanel, BorderLayout.CENTER);
@@ -319,7 +428,7 @@ public class BateryProductPanel extends JPanel {
             }
         });
 
-        if (product.equals(selectedProduct)) {
+        if (selectedProduct != null && selectedProduct.equals(product)) {
             card.setBorder(new CompoundBorder(
                     new LineBorder(Color.RED, 3, true),
                     new EmptyBorder(8, 8, 8, 8)));
@@ -330,8 +439,10 @@ public class BateryProductPanel extends JPanel {
 
     private void updatePagination() {
         paginationPanel.removeAll();
+
         int total = (int) Math.ceil((double) filteredProducts.size() / ITEMS_PER_PAGE);
-        if (total == 0) total = 1;
+        if (total == 0)
+            total = 1;
         final int totalPages = total;
 
         JPanel container = new JPanel(new BorderLayout(120, 0));
@@ -351,10 +462,28 @@ public class BateryProductPanel extends JPanel {
             btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         }
 
-        firstBtn.addActionListener(e -> { currentPage = 1; updateGrid(); updatePagination(); });
-        prevBtn.addActionListener(e -> { if (currentPage > 1) currentPage--; updateGrid(); updatePagination(); });
-        nextBtn.addActionListener(e -> { if (currentPage < totalPages) currentPage++; updateGrid(); updatePagination(); });
-        lastBtn.addActionListener(e -> { currentPage = totalPages; updateGrid(); updatePagination(); });
+        firstBtn.addActionListener(e -> {
+            currentPage = 1;
+            updateGrid();
+            updatePagination();
+        });
+        prevBtn.addActionListener(e -> {
+            if (currentPage > 1)
+                currentPage--;
+            updateGrid();
+            updatePagination();
+        });
+        nextBtn.addActionListener(e -> {
+            if (currentPage < totalPages)
+                currentPage++;
+            updateGrid();
+            updatePagination();
+        });
+        lastBtn.addActionListener(e -> {
+            currentPage = totalPages;
+            updateGrid();
+            updatePagination();
+        });
 
         JLabel pagLabel = new JLabel("Página ");
         pagLabel.setFont(new Font("Segoe UI", Font.BOLD, 25));
@@ -365,21 +494,29 @@ public class BateryProductPanel extends JPanel {
         int maxVisible = 4;
         int startPage = Math.max(1, currentPage - 1);
         int endPage = Math.min(totalPages, startPage + maxVisible - 1);
-        if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+        if (endPage - startPage < maxVisible - 1)
+            startPage = Math.max(1, endPage - maxVisible + 1);
 
-        if (startPage > 1) pagesPanel.add(new JLabel("..."));
+        if (startPage > 1)
+            pagesPanel.add(new JLabel("..."));
 
         for (int i = startPage; i <= endPage; i++) {
             JButton pageBtn = createStyledButton(String.valueOf(i));
             final int page = i;
             pageBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
             pageBtn.setPreferredSize(new Dimension(45, 45));
-            pageBtn.setBackground(i == currentPage ? GlobalView.ASIDE_BACKGROUND : GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
-            pageBtn.addActionListener(e -> { currentPage = page; updateGrid(); updatePagination(); });
+            pageBtn.setBackground(i == currentPage ? GlobalView.ASIDE_BACKGROUND
+                    : GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
+            pageBtn.addActionListener(e -> {
+                currentPage = page;
+                updateGrid();
+                updatePagination();
+            });
             pagesPanel.add(pageBtn);
         }
 
-        if (endPage < totalPages) pagesPanel.add(new JLabel("..."));
+        if (endPage < totalPages)
+            pagesPanel.add(new JLabel("..."));
 
         pagesPanel.add(nextBtn);
         pagesPanel.add(lastBtn);
@@ -402,24 +539,43 @@ public class BateryProductPanel extends JPanel {
         deleteBtn.setEnabled(selectedProduct != null);
 
         editBtn.addActionListener(e -> {
-            if (selectedProduct == null) return;
-            EditCreateProductPanel editPanel = new EditCreateProductPanel("Editar Producto", selectedProduct,
-                updatedProduct -> {
-                    selectedProduct.put("nombre", updatedProduct.getString("nombre"));
-                    selectedProduct.put("marca", updatedProduct.getString("marca"));
-                    selectedProduct.put("precio", updatedProduct.getInt("precio"));
-                    selectedProduct.put("stock", updatedProduct.getInt("stock"));
-                    selectedProduct.put("imagen", updatedProduct.getString("imagen"));
-                    applyFilters();
-                    saveProductsToJson(JSON_FILE_PATH);
-                }, this, controller);
-            showDialog(editPanel, "Editar Producto");
+            if (selectedProduct == null)
+                return;
+
+            EditCreateProductPanel editPanel = new EditCreateProductPanel(
+                    "Editar Producto", selectedProduct,
+                    updatedProduct -> {
+                        selectedProduct.put("nombre", updatedProduct.getString("nombre"));
+                        selectedProduct.put("marca", updatedProduct.getString("marca"));
+                        selectedProduct.put("precio", updatedProduct.getInt("precio"));
+                        selectedProduct.put("stock", updatedProduct.getInt("stock"));
+                        selectedProduct.put("imagen", updatedProduct.getString("imagen"));
+                        applyFilters();
+                        saveProductsToJson(JSON_FILE_PATH);
+                    },
+                    this,
+                    controller);
+
+            JDialog editDialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Editar producto",
+                    Dialog.ModalityType.APPLICATION_MODAL);
+            editDialog.setUndecorated(true);
+            editDialog.setContentPane(editPanel);
+            Point location = this.getLocationOnScreen();
+            Dimension size = this.getSize();
+            editDialog.setBounds(location.x, location.y, size.width, size.height);
+            editDialog.setVisible(true);
         });
 
         deleteBtn.addActionListener(e -> {
-            if (selectedProduct == null) return;
+            if (selectedProduct == null)
+                return;
+
             Frame frame = (Frame) SwingUtilities.getWindowAncestor(this);
-            boolean confirmed = ConfirmDialog.showConfirmDialog(frame, "¿Deseas eliminar este producto?", "Confirmar eliminación");
+            boolean confirmed = ConfirmDialog.showConfirmDialog(
+                    frame,
+                    "¿Deseas eliminar este producto?",
+                    "Confirmar eliminación");
+
             if (confirmed) {
                 allProducts.remove(selectedProduct);
                 applyFilters();
@@ -427,22 +583,40 @@ public class BateryProductPanel extends JPanel {
                 selectedProduct = null;
                 editBtn.setEnabled(false);
                 deleteBtn.setEnabled(false);
-                new SuccessPopUp(frame, "Éxito:", "El producto se eliminó exitosamente.").setVisible(true);
+                new SuccessPopUp(frame, "Éxito:", "El producto se eliminó exitosamente.");
             }
         });
 
         addBtn.addActionListener(e -> {
             JSONObject newProduct = new JSONObject();
-            newProduct.put("nombre", "").put("marca", "").put("precio", 0).put("stock", 0).put("imagen", "");
-            EditCreateProductPanel addPanel = new EditCreateProductPanel("Crear Producto", newProduct,
-                addedProduct -> {
-                    allProducts.add(addedProduct);
-                    applyFilters();
-                    saveProductsToJson(JSON_FILE_PATH);
-                    Frame frame = (Frame) SwingUtilities.getWindowAncestor(this);
-                    new SuccessPopUp(frame, "Éxito:", "El producto se añadió exitosamente.").setVisible(true);
-                }, this, controller);
-            showDialog(addPanel, "Crear Producto");
+            newProduct.put("nombre", "");
+            newProduct.put("marca", "");
+            newProduct.put("precio", 0);
+            newProduct.put("stock", 0);
+            newProduct.put("imagen", "");
+
+            EditCreateProductPanel addPanel = new EditCreateProductPanel(
+                    "Crear producto",
+                    newProduct,
+                    addedProduct -> {
+                        allProducts.add(addedProduct);
+                        applyFilters();
+                        saveProductsToJson(JSON_FILE_PATH);
+                        Frame frame = (Frame) SwingUtilities.getWindowAncestor(this);
+                        new SuccessPopUp(frame, "Éxito:", "El producto se añadió exitosamente.");
+
+                    },
+                    this,
+                    controller);
+
+            JDialog addDialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Agregar producto",
+                    Dialog.ModalityType.APPLICATION_MODAL);
+            addDialog.setUndecorated(true);
+            addDialog.setContentPane(addPanel);
+            Point location = this.getLocationOnScreen();
+            Dimension size = this.getSize();
+            addDialog.setBounds(location.x, location.y, size.width, size.height);
+            addDialog.setVisible(true);
         });
 
         actionPanel.add(editBtn);
@@ -451,18 +625,10 @@ public class BateryProductPanel extends JPanel {
 
         container.add(pagesPanel, BorderLayout.WEST);
         container.add(actionPanel, BorderLayout.EAST);
+
         paginationPanel.add(container);
         paginationPanel.revalidate();
         paginationPanel.repaint();
-    }
-    
-    private void showDialog(JPanel panel, String title) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), title, Dialog.ModalityType.APPLICATION_MODAL);
-        dialog.setUndecorated(true);
-        dialog.setContentPane(panel);
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
     }
 
     private JButton createStyledButton(String text) {
@@ -478,84 +644,17 @@ public class BateryProductPanel extends JPanel {
         btn.setContentAreaFilled(true);
         btn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) { btn.setBackground(GlobalView.ASIDE_BACKGROUND); }
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(GlobalView.ASIDE_BACKGROUND);
+            }
+
             @Override
             public void mouseExited(MouseEvent e) {
                 if (!(btn.getText().equals(String.valueOf(currentPage))))
                     btn.setBackground(GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
             }
         });
+
         return btn;
-    }
-
-    private JCheckBox createStyledCheckBox(String text) {
-        JCheckBox chk = new JCheckBox(text);
-        chk.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-        chk.setForeground(Color.BLACK);
-        chk.setBackground(GlobalView.GENERAL_BACKGROUND);
-        chk.setFocusPainted(false);
-        chk.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        chk.setAlignmentX(Component.LEFT_ALIGNMENT);
-        chk.setBorder(new EmptyBorder(4, 0, 4, 0));
-        chk.setIconTextGap(10);
-        chk.setIcon(CHECKBOX_DEFAULT_ICON);
-        chk.setSelectedIcon(CHECKBOX_SELECTED_ICON);
-        chk.setRolloverIcon(CHECKBOX_HOVER_ICON);
-        chk.setRolloverSelectedIcon(CHECKBOX_SELECTED_HOVER_ICON);
-        return chk;
-    }
-
-    private JRadioButton createStyledRadio(String text) {
-        JRadioButton rb = new JRadioButton(text);
-        rb.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-        rb.setForeground(Color.BLACK);
-        rb.setBackground(GlobalView.GENERAL_BACKGROUND);
-        rb.setFocusPainted(false);
-        rb.setAlignmentX(Component.LEFT_ALIGNMENT);
-        rb.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        rb.setBorder(new EmptyBorder(4, 0, 4, 0));
-        rb.setIconTextGap(10);
-        rb.setIcon(RADIO_DEFAULT_ICON);
-        rb.setSelectedIcon(RADIO_SELECTED_ICON);
-        rb.setRolloverIcon(RADIO_HOVER_ICON);
-        rb.setRolloverSelectedIcon(RADIO_SELECTED_HOVER_ICON);
-        return rb;
-    }
-
-    private static Icon createCheckboxIcon(boolean isSelected, boolean isHover) {
-        int width = 18, height = 18;
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = image.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (isSelected) {
-            g2.setColor(isHover ? GlobalView.ASIDE_BACKGROUND.darker() : GlobalView.ASIDE_BACKGROUND);
-            g2.fill(new RoundRectangle2D.Float(0, 0, width, height, 5, 5));
-            g2.setColor(Color.WHITE);
-            g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2.drawLine(5, 9, 8, 12);
-            g2.drawLine(8, 12, 14, 6);
-        } else {
-            g2.setColor(isHover ? Color.BLACK : Color.GRAY);
-            g2.setStroke(new BasicStroke(1.8f));
-            g2.draw(new RoundRectangle2D.Float(1, 1, width - 2, height - 2, 5, 5));
-        }
-        g2.dispose();
-        return new ImageIcon(image);
-    }
-
-    private static Icon createRadioButtonIcon(boolean isSelected, boolean isHover) {
-        int size = 18;
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = image.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(isHover ? Color.BLACK : Color.GRAY);
-        g2.setStroke(new BasicStroke(1.8f));
-        g2.drawOval(1, 1, size - 3, size - 3);
-        if (isSelected) {
-            g2.setColor(isHover ? GlobalView.ASIDE_BACKGROUND.darker() : GlobalView.ASIDE_BACKGROUND);
-            g2.fillOval(5, 5, size - 10, size - 10);
-        }
-        g2.dispose();
-        return new ImageIcon(image);
     }
 }

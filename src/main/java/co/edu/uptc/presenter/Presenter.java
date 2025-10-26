@@ -1,151 +1,468 @@
 package co.edu.uptc.presenter;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/*
- * NOTA PARA EL DESARROLLADOR DEL MODELO:
- * Las clases como 'TireDTO', 'SaleDTO', 'ReportDTO', 'ServiceDTO', etc., mencionadas
- * en los parámetros de los métodos, son DTOs (Data Transfer Objects).
- * Deberás crearlas como clases Java normales (POJOs) con sus respectivos
- * atributos privados, constructor y métodos getters/setters.
- */
+import co.edu.uptc.models.products.Battery;
+import co.edu.uptc.models.products.BrakePad;
+import co.edu.uptc.models.products.Filters;
+import co.edu.uptc.models.products.Lubricant;
+import co.edu.uptc.models.products.Product;
+import co.edu.uptc.models.products.Tire;
+import co.edu.uptc.models.registers.PurchaseRegister;
+import co.edu.uptc.models.registers.Register;
+import co.edu.uptc.models.registers.SellingRegister;
+import co.edu.uptc.persistence.Persistence;
+import co.edu.uptc.persistence.Persistence.RuntimeTypeAdapterFactory;
 
 public class Presenter {
+
+    // Instancias de Persistence para cada tipo de producto
+    private Persistence<Product> tiresPersistence;
+    private Persistence<Product> lubFiltersPersistence;
+    private Persistence<Product> batteriesPersistence;
+    private Persistence<Product> brakePadsPersistence;
+    
+    // Instancias de Persistence para registros
+    private Persistence<Register> purchasesPersistence;
+    private Persistence<Register> salesPersistence;
+
+    // Constructor - Inicializa todas las instancias de Persistence
+    public Presenter() {
+        initializePersistence();
+    }
+
+    /**
+     * Inicializa todas las instancias de Persistence con sus respectivos TypeAdapters
+     */
+    private void initializePersistence() {
+        // TypeAdapter para productos
+        RuntimeTypeAdapterFactory<Product> productAdapter = RuntimeTypeAdapterFactory
+            .of(Product.class, "productType")
+            .registerSubtype(Tire.class, "Tire")
+            .registerSubtype(Lubricant.class, "Lubricant")
+            .registerSubtype(Filters.class, "Filters")
+            .registerSubtype(Battery.class, "Battery")
+            .registerSubtype(BrakePad.class, "BrakePad");
+
+        // Persistence para cada tipo de producto
+        tiresPersistence = new Persistence<>("tires.json", productAdapter);
+        lubFiltersPersistence = new Persistence<>("lubricants_filters.json", productAdapter);
+        batteriesPersistence = new Persistence<>("batteries.json", productAdapter);
+        brakePadsPersistence = new Persistence<>("brakepads.json", productAdapter);
+
+        // TypeAdapter para registros
+        RuntimeTypeAdapterFactory<Register> registerAdapter = RuntimeTypeAdapterFactory
+            .of(Register.class, "registerType")
+            .registerSubtype(PurchaseRegister.class, "PurchaseRegister")
+            .registerSubtype(SellingRegister.class, "SellingRegister");
+
+        // Persistence para registros
+        purchasesPersistence = new Persistence<>("purchases.json", registerAdapter);
+        salesPersistence = new Persistence<>("sales.json", registerAdapter);
+    }
 
     // =======================================================
     // ==               APPLICATION LIFECYCLE               ==
     // =======================================================
 
-    /**
-     * Inicia la aplicación, prepara la vista principal y carga los datos iniciales.
-     * Debe ser llamado al arrancar el programa.
-     */
-    public void startApplication() {}
+    public void startApplication() {
+        // Inicializar aplicación
+        loadInitialData();
+    }
 
-    /**
-     * Carga todos los datos esenciales desde el Modelo la primera vez.
-     * La Vista debe mostrar un indicador de carga mientras esto ocurre.
-     */
-    public void loadInitialData() {}
+    public void loadInitialData() {
+        try {
+            // Cargar todos los datos iniciales
+            requestTireList();
+            requestLubricantList();
+            requestBatteryList();
+            requestBrakePadList();
+            requestPurchasesHistory();
+            requestSalesHistory();
+        } catch (Exception e) {
+            System.err.println("Error cargando datos iniciales: " + e.getMessage());
+        }
+    }
 
-    /**
-     * Realiza las acciones necesarias para cerrar la aplicación de forma segura,
-     * como guardar cualquier cambio pendiente.
-     */
-    public void closeApplication() {}
-
+    public void closeApplication() {
+        // Guardar cambios pendientes si es necesario
+        System.out.println("Cerrando aplicación...");
+    }
 
     // =======================================================
     // ==              INVENTORY MANAGEMENT                 ==
     // =======================================================
 
     // ----- Llantas (Tires) -----
-    /** Solicita la lista completa de llantas para mostrarla en la vista. */
-    public void requestTireList() {}
-    /** Solicita guardar una llanta nueva o actualizada. */
-    public void saveTire(TireDTO tire) {}
-    /** Solicita la eliminación de una llanta por su ID. */
-    public void requestTireDeletion(String tireId) {}
-    /** Solicita la lista de llantas filtrada por texto de búsqueda y marcas. */
-    public void filterTires(String searchText, List<String> brands) {}
+    public List<Tire> requestTireList() {
+        try {
+            List<Product> products = tiresPersistence.loadList();
+            return products.stream()
+                .filter(p -> p instanceof Tire)
+                .map(p -> (Tire) p)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Error al cargar llantas: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public void saveTire(Tire tire) {
+        try {
+            List<Product> products = tiresPersistence.loadList();
+            
+            // Buscar si ya existe (por ID) para actualizar o agregar nuevo
+            boolean exists = false;
+            for (int i = 0; i < products.size(); i++) {
+                if (products.get(i).getId().equals(tire.getId())) {
+                    products.set(i, tire);
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                products.add(tire);
+            }
+            
+            tiresPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al guardar llanta: " + e.getMessage());
+        }
+    }
+
+    public void requestTireDeletion(String tireId) {
+        try {
+            List<Product> products = tiresPersistence.loadList();
+            products.removeIf(p -> p.getId().equals(tireId));
+            tiresPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al eliminar llanta: " + e.getMessage());
+        }
+    }
+
+    public List<Tire> filterTires(String searchText, List<String> brands) {
+        List<Tire> allTires = requestTireList();
+        
+        return allTires.stream()
+            .filter(t -> searchText == null || searchText.isEmpty() || 
+                        t.getName().toLowerCase().contains(searchText.toLowerCase()))
+            .filter(t -> brands == null || brands.isEmpty() || brands.contains(t.getBrand()))
+            .collect(Collectors.toList());
+    }
 
     // ----- Lubricantes y Filtros (Lubricants & Filters) -----
-    /** Solicita la lista completa de lubricantes y filtros. */
-    public void requestLubricantList() {}
-    /** Solicita guardar un lubricante nuevo o actualizado. */
-    public void saveLubricant(LubricantDTO lubricant) {}
-    /** Solicita la eliminación de un lubricante por su ID. */
-    public void requestLubricantDeletion(String lubricantId) {}
-    /** Solicita la lista de lubricantes filtrada. */
-    public void filterLubricants(String searchText, List<String> brands) {}
+    public List<Product> requestLubricantList() {
+        try {
+            return lubFiltersPersistence.loadList();
+        } catch (IOException e) {
+            System.err.println("Error al cargar lubricantes/filtros: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public void saveLubricant(Product lubricantOrFilter) {
+        try {
+            List<Product> products = lubFiltersPersistence.loadList();
+            
+            boolean exists = false;
+            for (int i = 0; i < products.size(); i++) {
+                if (products.get(i).getId().equals(lubricantOrFilter.getId())) {
+                    products.set(i, lubricantOrFilter);
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                products.add(lubricantOrFilter);
+            }
+            
+            lubFiltersPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al guardar lubricante/filtro: " + e.getMessage());
+        }
+    }
+
+    public void requestLubricantDeletion(String lubricantId) {
+        try {
+            List<Product> products = lubFiltersPersistence.loadList();
+            products.removeIf(p -> p.getId().equals(lubricantId));
+            lubFiltersPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al eliminar lubricante/filtro: " + e.getMessage());
+        }
+    }
+
+    public List<Product> filterLubricants(String searchText, List<String> brands) {
+        List<Product> allProducts = requestLubricantList();
+        
+        return allProducts.stream()
+            .filter(p -> searchText == null || searchText.isEmpty() || 
+                        p.getName().toLowerCase().contains(searchText.toLowerCase()))
+            .filter(p -> brands == null || brands.isEmpty() || brands.contains(p.getBrand()))
+            .collect(Collectors.toList());
+    }
 
     // ----- Baterías (Batteries) -----
-    /** Solicita la lista completa de baterías. */
-    public void requestBatteryList() {}
-    /** Solicita guardar una batería nueva o actualizada. */
-    public void saveBattery(BatteryDTO battery) {}
-    /** Solicita la eliminación de una batería por su ID. */
-    public void requestBatteryDeletion(String batteryId) {}
-    /** Solicita la lista de baterías filtrada. */
-    public void filterBatteries(String searchText, List<String> brands) {}
+    public List<Battery> requestBatteryList() {
+        try {
+            List<Product> products = batteriesPersistence.loadList();
+            return products.stream()
+                .filter(p -> p instanceof Battery)
+                .map(p -> (Battery) p)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Error al cargar baterías: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public void saveBattery(Battery battery) {
+        try {
+            List<Product> products = batteriesPersistence.loadList();
+            
+            boolean exists = false;
+            for (int i = 0; i < products.size(); i++) {
+                if (products.get(i).getId().equals(battery.getId())) {
+                    products.set(i, battery);
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                products.add(battery);
+            }
+            
+            batteriesPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al guardar batería: " + e.getMessage());
+        }
+    }
+
+    public void requestBatteryDeletion(String batteryId) {
+        try {
+            List<Product> products = batteriesPersistence.loadList();
+            products.removeIf(p -> p.getId().equals(batteryId));
+            batteriesPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al eliminar batería: " + e.getMessage());
+        }
+    }
+
+    public List<Battery> filterBatteries(String searchText, List<String> brands) {
+        List<Battery> allBatteries = requestBatteryList();
+        
+        return allBatteries.stream()
+            .filter(b -> searchText == null || searchText.isEmpty() || 
+                        b.getName().toLowerCase().contains(searchText.toLowerCase()))
+            .filter(b -> brands == null || brands.isEmpty() || brands.contains(b.getBrand()))
+            .collect(Collectors.toList());
+    }
     
     // ----- Pastillas de Freno (Brake Pads) -----
-    /** Solicita la lista completa de pastillas de freno. */
-    public void requestBrakePadList() {}
-    /** Solicita guardar una pastilla de freno nueva o actualizada. */
-    public void saveBrakePad(BrakePadDTO brakePad) {}
-    /** Solicita la eliminación de una pastilla de freno por su ID. */
-    public void requestBrakePadDeletion(String brakePadId) {}
-    /** Solicita la lista de pastillas de freno filtrada. */
-    public void filterBrakePads(String searchText, List<String> brands) {}
+    public List<BrakePad> requestBrakePadList() {
+        try {
+            List<Product> products = brakePadsPersistence.loadList();
+            return products.stream()
+                .filter(p -> p instanceof BrakePad)
+                .map(p -> (BrakePad) p)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Error al cargar pastillas de freno: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
-    // =======================================================
-    // ==                SERVICES MANAGEMENT                ==
-    // =======================================================
+    public void saveBrakePad(BrakePad brakePad) {
+        try {
+            List<Product> products = brakePadsPersistence.loadList();
+            
+            boolean exists = false;
+            for (int i = 0; i < products.size(); i++) {
+                if (products.get(i).getId().equals(brakePad.getId())) {
+                    products.set(i, brakePad);
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                products.add(brakePad);
+            }
+            
+            brakePadsPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al guardar pastilla de freno: " + e.getMessage());
+        }
+    }
 
-    /** Solicita la lista completa de servicios. */
-    public void requestServiceList() {}
-    /** Solicita guardar un servicio nuevo o actualizado. */
-    public void saveService(ServiceDTO service) {}
-    /** Solicita la eliminación de un servicio por su ID. */
-    public void requestServiceDeletion(String serviceId) {}
-    /** Solicita la lista de servicios filtrada por el nombre. */
-    public void filterServices(String searchText) {}
+    public void requestBrakePadDeletion(String brakePadId) {
+        try {
+            List<Product> products = brakePadsPersistence.loadList();
+            products.removeIf(p -> p.getId().equals(brakePadId));
+            brakePadsPersistence.saveList(products);
+        } catch (IOException e) {
+            System.err.println("Error al eliminar pastilla de freno: " + e.getMessage());
+        }
+    }
 
+    public List<BrakePad> filterBrakePads(String searchText, List<String> brands) {
+        List<BrakePad> allBrakePads = requestBrakePadList();
+        
+        return allBrakePads.stream()
+            .filter(b -> searchText == null || searchText.isEmpty() || 
+                        b.getName().toLowerCase().contains(searchText.toLowerCase()))
+            .filter(b -> brands == null || brands.isEmpty() || brands.contains(b.getBrand()))
+            .collect(Collectors.toList());
+    }
 
     // =======================================================
     // ==                 SALES & PURCHASES                 ==
     // =======================================================
 
     // ----- Ventas (Sales) -----
-    /** Solicita el historial completo de ventas. */
-    public void requestSalesHistory() {}
-    /** Registra una nueva venta. El Modelo debe actualizar el stock automáticamente. */
-    public void registerNewSale(SaleDTO sale) {}
-    /** Solicita los detalles de una venta específica para visualización o edición. */
-    public void requestSaleDetails(String saleId) {}
-    /** Solicita la anulación (eliminación) de una venta. El Modelo debe revertir el stock. */
-    public void requestSaleCancellation(String saleId) {}
+    public List<SellingRegister> requestSalesHistory() {
+        try {
+            List<Register> registers = salesPersistence.loadList();
+            return registers.stream()
+                .filter(r -> r instanceof SellingRegister)
+                .map(r -> (SellingRegister) r)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Error al cargar ventas: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public void registerNewSale(SellingRegister sale) {
+        try {
+            List<Register> registers = salesPersistence.loadList();
+            registers.add(sale);
+            salesPersistence.saveList(registers);
+            
+            // TODO: Actualizar stock automáticamente
+        } catch (IOException e) {
+            System.err.println("Error al registrar venta: " + e.getMessage());
+        }
+    }
+
+    public SellingRegister requestSaleDetails(String saleId) {
+        List<SellingRegister> sales = requestSalesHistory();
+        return sales.stream()
+            .filter(s -> s.getInvoiceNumber().equals(saleId))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public void requestSaleCancellation(String saleId) {
+        try {
+            List<Register> registers = salesPersistence.loadList();
+            registers.removeIf(r -> r.getInvoiceNumber().equals(saleId));
+            salesPersistence.saveList(registers);
+            
+            // TODO: Revertir stock automáticamente
+        } catch (IOException e) {
+            System.err.println("Error al cancelar venta: " + e.getMessage());
+        }
+    }
     
     // ----- Compras (Purchases) -----
-    /** Solicita el historial completo de compras a proveedores. */
-    public void requestPurchasesHistory() {}
-    /** Registra una nueva compra. El Modelo debe actualizar el stock automáticamente. */
-    public void registerNewPurchase(PurchaseDTO purchase) {}
-    /** Solicita los detalles de una compra específica. */
-    public void requestPurchaseDetails(String purchaseId) {}
-    /** Solicita la anulación (eliminación) de una compra. El Modelo debe revertir el stock. */
-    public void requestPurchaseCancellation(String purchaseId) {}
+    public List<PurchaseRegister> requestPurchasesHistory() {
+        try {
+            List<Register> registers = purchasesPersistence.loadList();
+            return registers.stream()
+                .filter(r -> r instanceof PurchaseRegister)
+                .map(r -> (PurchaseRegister) r)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Error al cargar compras: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
+    public void registerNewPurchase(PurchaseRegister purchase) {
+        try {
+            List<Register> registers = purchasesPersistence.loadList();
+            registers.add(purchase);
+            purchasesPersistence.saveList(registers);
+            
+            // TODO: Actualizar stock automáticamente
+        } catch (IOException e) {
+            System.err.println("Error al registrar compra: " + e.getMessage());
+        }
+    }
+
+    public PurchaseRegister requestPurchaseDetails(String purchaseId) {
+        List<PurchaseRegister> purchases = requestPurchasesHistory();
+        return purchases.stream()
+            .filter(p -> p.getInvoiceNumber().equals(purchaseId))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public void requestPurchaseCancellation(String purchaseId) {
+        try {
+            List<Register> registers = purchasesPersistence.loadList();
+            registers.removeIf(r -> r.getInvoiceNumber().equals(purchaseId));
+            purchasesPersistence.saveList(registers);
+            
+            // TODO: Revertir stock automáticamente
+        } catch (IOException e) {
+            System.err.println("Error al cancelar compra: " + e.getMessage());
+        }
+    }
 
     // =======================================================
     // ==                 REPORTS & ALERTS                  ==
     // =======================================================
 
-    /**
-     * Solicita la lista de productos con bajo stock para mostrar alertas en la UI.
-     * Debería llamarse periódicamente o al iniciar la app.
-     */
-    public void requestLowStockAlerts() {}
+    public List<Product> requestLowStockAlerts() {
+        List<Product> lowStockProducts = new ArrayList<>();
+        int LOW_STOCK_THRESHOLD = 10;
+        
+        try {
+            // Verificar stock bajo en todos los tipos de productos
+            lowStockProducts.addAll(tiresPersistence.loadList().stream()
+                .filter(p -> p.getstock() < LOW_STOCK_THRESHOLD)
+                .collect(Collectors.toList()));
+                
+            lowStockProducts.addAll(lubFiltersPersistence.loadList().stream()
+                .filter(p -> p.getstock() < LOW_STOCK_THRESHOLD)
+                .collect(Collectors.toList()));
+                
+            lowStockProducts.addAll(batteriesPersistence.loadList().stream()
+                .filter(p -> p.getstock() < LOW_STOCK_THRESHOLD)
+                .collect(Collectors.toList()));
+                
+            lowStockProducts.addAll(brakePadsPersistence.loadList().stream()
+                .filter(p -> p.getstock() < LOW_STOCK_THRESHOLD)
+                .collect(Collectors.toList()));
+                
+        } catch (IOException e) {
+            System.err.println("Error al verificar stock bajo: " + e.getMessage());
+        }
+        
+        return lowStockProducts;
+    }
 
-    /**
-     * Genera y solicita un reporte de ventas en un rango de fechas.
-     * El resultado (ReportDTO) será enviado a la Vista para ser mostrado.
-     * @param startDate Fecha de inicio del reporte.
-     * @param endDate Fecha de fin del reporte.
-     */
-    public void generateSalesReport(Date startDate, Date endDate) {}
+    public void generateSalesReport(Date startDate, Date endDate) {
+        // TODO: Implementar generación de reporte de ventas
+        System.out.println("Generando reporte de ventas de " + startDate + " a " + endDate);
+    }
 
-    /**
-     * Genera y solicita un reporte de valoración total del inventario actual.
-     */
-    public void generateInventoryValuationReport() {}
+    public void generateInventoryValuationReport() {
+        // TODO: Implementar valoración de inventario
+        System.out.println("Generando reporte de valoración de inventario");
+    }
 
-    /**
-     * Genera y solicita un reporte de los productos más vendidos.
-     * @param limit El número de productos a mostrar (ej. Top 10).
-     */
-    public void generateTopSellingProductsReport(int limit) {}
-
+    public void generateTopSellingProductsReport(int limit) {
+        // TODO: Implementar reporte de productos más vendidos
+        System.out.println("Generando reporte de top " + limit + " productos más vendidos");
+    }
 }

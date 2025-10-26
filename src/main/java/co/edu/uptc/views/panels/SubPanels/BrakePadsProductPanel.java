@@ -1,60 +1,18 @@
-package co.edu.uptc.view.panels.SubPanels;
+package co.edu.uptc.views.panels.SubPanels;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.swing.AbstractButton;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.*;
 
 import co.edu.uptc.view.GlobalView;
 import co.edu.uptc.view.dialogs.ConfirmDialog;
@@ -63,7 +21,7 @@ import co.edu.uptc.view.utils.PropertiesService;
 import co.edu.uptc.view.utils.TextPrompt;
 import co.edu.uptc.view.utils.ViewController;
 
-public class BateryProductPanel extends JPanel {
+public class BrakePadsProductPanel extends JPanel {
 
     private List<JSONObject> allProducts;
     private List<JSONObject> filteredProducts;
@@ -79,9 +37,9 @@ public class BateryProductPanel extends JPanel {
     private int currentPage = 1;
     private final int ITEMS_PER_PAGE = 8;
     private final ViewController controller;
-    private static final String JSON_FILE_PATH = "src/main/resources/JSON/batteries.json";
+    private static final String JSON_FILE_PATH = "src/main/resources/JSON/brake_pads.json";
 
-    // --- Iconos personalizados (reutilizados) ---
+    // --- Iconos personalizados ---
     private static final Icon CHECKBOX_DEFAULT_ICON = createCheckboxIcon(false, false);
     private static final Icon CHECKBOX_SELECTED_ICON = createCheckboxIcon(true, false);
     private static final Icon CHECKBOX_HOVER_ICON = createCheckboxIcon(false, true);
@@ -92,7 +50,7 @@ public class BateryProductPanel extends JPanel {
     private static final Icon RADIO_HOVER_ICON = createRadioButtonIcon(false, true);
     private static final Icon RADIO_SELECTED_HOVER_ICON = createRadioButtonIcon(true, true);
 
-    public BateryProductPanel(ViewController controller) {
+    public BrakePadsProductPanel(ViewController controller) {
         this.controller = controller;
         this.p = new PropertiesService();
 
@@ -167,7 +125,7 @@ public class BateryProductPanel extends JPanel {
         searchField = new JTextField();
         searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        new TextPrompt("Nombre de la batería", searchField);
+        new TextPrompt("Nombre de la pastilla", searchField);
         searchField.setBorder(new CompoundBorder(
                 new LineBorder(Color.GRAY, 1, true),
                 new EmptyBorder(5, 8, 5, 8)));
@@ -300,10 +258,22 @@ public class BateryProductPanel extends JPanel {
         JPanel infoPanel = new JPanel(new GridLayout(4, 1));
         infoPanel.setBackground(GlobalView.CARDS_BACKGROUND);
         
-        infoPanel.add(new JLabel(product.getString("nombre"), SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.BOLD, 14)); }});
-        infoPanel.add(new JLabel("Marca: " + product.getString("marca"), SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.PLAIN, 12)); }});
-        infoPanel.add(new JLabel("Precio: $" + product.getInt("precio"), SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.PLAIN, 12)); }});
-        infoPanel.add(new JLabel("Stock: " + product.getInt("stock") + " uds", SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.ITALIC, 11)); setForeground(Color.GRAY); }});
+        JLabel nameLabel = new JLabel(product.getString("nombre"), SwingConstants.CENTER);
+        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        infoPanel.add(nameLabel);
+        
+        JLabel brandLabel = new JLabel("Marca: " + product.getString("marca"), SwingConstants.CENTER);
+        brandLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        infoPanel.add(brandLabel);
+        
+        JLabel priceLabel = new JLabel("Precio: $" + product.getInt("precio"), SwingConstants.CENTER);
+        priceLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        infoPanel.add(priceLabel);
+        
+        JLabel stockLabel = new JLabel("Stock: " + product.getInt("stock") + " uds", SwingConstants.CENTER);
+        stockLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        stockLabel.setForeground(Color.GRAY);
+        infoPanel.add(stockLabel);
 
         card.add(imageLabel, BorderLayout.NORTH);
         card.add(infoPanel, BorderLayout.CENTER);
@@ -351,10 +321,26 @@ public class BateryProductPanel extends JPanel {
             btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         }
 
-        firstBtn.addActionListener(e -> { currentPage = 1; updateGrid(); updatePagination(); });
-        prevBtn.addActionListener(e -> { if (currentPage > 1) currentPage--; updateGrid(); updatePagination(); });
-        nextBtn.addActionListener(e -> { if (currentPage < totalPages) currentPage++; updateGrid(); updatePagination(); });
-        lastBtn.addActionListener(e -> { currentPage = totalPages; updateGrid(); updatePagination(); });
+        firstBtn.addActionListener(e -> {
+            currentPage = 1;
+            updateGrid();
+            updatePagination();
+        });
+        prevBtn.addActionListener(e -> {
+            if (currentPage > 1) currentPage--;
+            updateGrid();
+            updatePagination();
+        });
+        nextBtn.addActionListener(e -> {
+            if (currentPage < totalPages) currentPage++;
+            updateGrid();
+            updatePagination();
+        });
+        lastBtn.addActionListener(e -> {
+            currentPage = totalPages;
+            updateGrid();
+            updatePagination();
+        });
 
         JLabel pagLabel = new JLabel("Página ");
         pagLabel.setFont(new Font("Segoe UI", Font.BOLD, 25));
@@ -365,7 +351,8 @@ public class BateryProductPanel extends JPanel {
         int maxVisible = 4;
         int startPage = Math.max(1, currentPage - 1);
         int endPage = Math.min(totalPages, startPage + maxVisible - 1);
-        if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+        if (endPage - startPage < maxVisible - 1)
+            startPage = Math.max(1, endPage - maxVisible + 1);
 
         if (startPage > 1) pagesPanel.add(new JLabel("..."));
 
@@ -375,7 +362,11 @@ public class BateryProductPanel extends JPanel {
             pageBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
             pageBtn.setPreferredSize(new Dimension(45, 45));
             pageBtn.setBackground(i == currentPage ? GlobalView.ASIDE_BACKGROUND : GlobalView.ASIDE_BUTTONS_ACTIVE_BACKGROUND);
-            pageBtn.addActionListener(e -> { currentPage = page; updateGrid(); updatePagination(); });
+            pageBtn.addActionListener(e -> {
+                currentPage = page;
+                updateGrid();
+                updatePagination();
+            });
             pagesPanel.add(pageBtn);
         }
 
@@ -460,8 +451,8 @@ public class BateryProductPanel extends JPanel {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), title, Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setUndecorated(true);
         dialog.setContentPane(panel);
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);
+        dialog.pack(); // Ajusta el tamaño al contenido
+        dialog.setLocationRelativeTo(this); // Centra el diálogo
         dialog.setVisible(true);
     }
 
@@ -478,7 +469,9 @@ public class BateryProductPanel extends JPanel {
         btn.setContentAreaFilled(true);
         btn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) { btn.setBackground(GlobalView.ASIDE_BACKGROUND); }
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(GlobalView.ASIDE_BACKGROUND);
+            }
             @Override
             public void mouseExited(MouseEvent e) {
                 if (!(btn.getText().equals(String.valueOf(currentPage))))
